@@ -33,9 +33,16 @@ export async function bootstrapAdmin(db, config) {
   return true;
 }
 
-export function createApp({ db, config }) {
+export function createApp({ db, config, notifier = null }) {
   const repo = makeRepo(db);
   const app = express();
+  // Sends the email for a new enquiry. Never slows down or breaks the form.
+  const saveEnquiry = (value) => {
+    const { id, duplicate } = repo.createEnquiry(value);
+    if (!duplicate && notifier) {
+      notifier({ id, ...value }).catch((error) => console.error('Email notification failed:', error.code || error.message));
+    }
+  };
   const loginLimiter = createLimiter({ max: 10, windowMs: 15 * 60 * 1000 });
   const enquiryLimiter = createLimiter({ max: 20, windowMs: 60 * 60 * 1000 });
 
@@ -74,7 +81,7 @@ export function createApp({ db, config }) {
     if (Object.keys(errors).length) {
       return res.status(422).send(homePage({ values: { ...value, consent: Boolean(req.body?.consent) }, errors, contact }));
     }
-    repo.createEnquiry(value);
+    saveEnquiry(value);
     return res.redirect(303, '/thank-you');
   });
   app.use(site);
@@ -95,7 +102,7 @@ export function createApp({ db, config }) {
     if (!enquiryLimiter.take(req.ip)) return res.status(429).json({ ok: false, error: 'Too many tries. Please try again later.' });
     const { errors, value } = validateEnquiry(req.body);
     if (Object.keys(errors).length) return res.status(422).json({ ok: false, errors });
-    repo.createEnquiry(value);
+    saveEnquiry(value);
     // Same answer whether the email is new or not, so nobody can test which emails are on the list.
     return res.status(201).json({ ok: true });
   });

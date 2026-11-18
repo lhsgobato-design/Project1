@@ -15,6 +15,7 @@
     "seed:demo": "node --disable-warning=ExperimentalWarning --env-file-if-exists=.env scripts/seed-demo.js"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "nodemailer": "^10.6.0"
   }
 }
