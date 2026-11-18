@@ -35,7 +35,7 @@ Needs Node 22.13 or newer. No other tools: the database is the SQLite built into
 npm install
 cp .env.example .env     # then set ADMIN_EMAIL, ADMIN_PASSWORD (12+ characters) and CONTACT_EMAIL
 npm start                # http://localhost:3000/admin
-npm test                 # 37 tests
+npm test                 # 38 tests
 ```
 
 - The first start creates the admin from `ADMIN_EMAIL` and `ADMIN_PASSWORD`, if there is none yet.
@@ -44,6 +44,7 @@ npm test                 # 37 tests
   It refuses to run when `NODE_ENV=production`.
 - Home is at `http://localhost:3000/`. `CONTACT_EMAIL` shows in the footer and on the Privacy page; until it is set they show
   "[contact email to be added]".
+- The public pages ask search engines not to index them until `ALLOW_INDEXING=true` (set it at launch, when the text is final).
 - Settings are in `.env.example`. On a real host set `NODE_ENV=production` (Secure cookies), `TRUST_PROXY=1`
   behind a proxy, and point `DATABASE_PATH` at a persistent volume. Without a volume the data is lost on every deploy.
 

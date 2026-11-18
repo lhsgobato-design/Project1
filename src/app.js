@@ -58,6 +58,8 @@ export function createApp({ db, config, notifier = null }) {
   const contact = config.contactEmail;
 
   site.use((req, res, next) => {
+    // The copy is still a draft: ask search engines to skip the site until ALLOW_INDEXING=true.
+    if (!config.allowIndexing) res.set('X-Robots-Tag', 'noindex, nofollow');
     res.set({
       'Referrer-Policy': 'strict-origin-when-cross-origin',
       'X-Content-Type-Options': 'nosniff',

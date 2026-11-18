@@ -8,6 +8,7 @@ export function loadConfig(env = process.env) {
     cookieSecure: env.COOKIE_SECURE ? env.COOKIE_SECURE === 'true' : production,
     trustProxy: trust ? (Number.isNaN(Number(trust)) ? trust : Number(trust)) : false,
     allowedOrigin: env.ALLOWED_ORIGIN || '',
+    allowIndexing: env.ALLOW_INDEXING === 'true',
     contactEmail: (env.CONTACT_EMAIL || '').trim(),
     publicUrl: (env.PUBLIC_URL || '').trim(),
     notifyEmail: (env.NOTIFY_EMAIL || '').trim(),

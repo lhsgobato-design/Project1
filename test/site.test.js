@@ -124,6 +124,19 @@ describe('the form on Home', () => {
   });
 });
 
+describe('search engines', () => {
+  it('are asked to skip the public pages until indexing is switched on', async () => {
+    assert.match((await get('/')).headers.get('x-robots-tag'), /noindex/);
+    const db2 = openDb(':memory:');
+    const server2 = createApp({ db: db2, config: { ...loadConfig({}), allowIndexing: true } }).listen(0);
+    await new Promise((resolve) => server2.once('listening', resolve));
+    const res = await fetch(`http://127.0.0.1:${server2.address().port}/`);
+    assert.equal(res.headers.get('x-robots-tag'), null);
+    server2.close();
+    db2.close();
+  });
+});
+
 describe('without a contact email', () => {
   it('shows an honest placeholder instead of a made-up address', async () => {
     const config = { ...loadConfig({}), contactEmail: '' };
