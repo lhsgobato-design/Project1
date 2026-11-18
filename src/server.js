@@ -7,6 +7,10 @@ const db = openDb(config.databasePath);
 
 if (await bootstrapAdmin(db, config)) console.log('Admin created from ADMIN_EMAIL and ADMIN_PASSWORD.');
 
+if (config.production && !config.contactEmail) {
+  console.warn('CONTACT_EMAIL is not set: the footer and Privacy page show a placeholder where people ask for deletion.');
+}
+
 const app = createApp({ db, config });
 const server = app.listen(config.port, () => {
   console.log(`project1 admin listening on port ${config.port}`);

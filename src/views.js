@@ -33,6 +33,7 @@ function layout({ title, body, csrf, nav = true }) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=DM+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="/admin/assets/tokens.css">
 <link rel="stylesheet" href="/admin/assets/admin.css">
 </head>
 <body>
@@ -201,7 +202,7 @@ ${message ? `<p class="notice" role="status">${esc(MESSAGES[message] || '')}</p>
       <summary class="btn btn-second">Delete this enquiry</summary>
       <form method="post" action="/admin/enquiries/${enquiry.id}/delete" class="stack">
         <input type="hidden" name="_csrf" value="${esc(session.csrf)}">
-        <p>Delete <strong class="break">${esc(enquiry.name)}</strong> and all its notes?</p>
+        <p class="break">Delete “${esc(enquiry.name)}” and all its notes?</p>
         <button class="btn" type="submit">Yes, delete</button>
       </form>
     </details>

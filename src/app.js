@@ -6,10 +6,12 @@ import {
   MIN_PASSWORD_LENGTH, createLimiter, dummyHash, hashPassword, randomToken, safeEqual, sha256, verifyPassword,
 } from './security.js';
 import { validateEnquiry, validateNote } from './validate.js';
+import { homePage, privacyPage, siteNotFoundPage, thankYouPage } from './site.js';
 import { detailPage, enquiriesCsv, listPage, loginPage, notFoundPage } from './views.js';
 
 const COOKIE = 'p1_admin';
 const here = path.dirname(fileURLToPath(import.meta.url));
+const publicDir = path.join(here, '..', 'public');
 
 function readCookie(req, name) {
   for (const part of String(req.headers.cookie || '').split(';')) {
@@ -43,6 +45,39 @@ export function createApp({ db, config }) {
   app.use(express.json({ limit: '32kb' }));
 
   app.get('/healthz', (req, res) => res.type('text').send('ok'));
+
+  // ---------- Public website ----------
+  const site = express.Router();
+  const contact = config.contactEmail;
+
+  site.use((req, res, next) => {
+    res.set({
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'X-Content-Type-Options': 'nosniff',
+      'Content-Security-Policy':
+        "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
+    });
+    next();
+  });
+  site.use('/assets', express.static(publicDir, { maxAge: '1h' }));
+  site.get('/', (req, res) => res.send(homePage({ contact })));
+  site.get('/thank-you', (req, res) => res.send(thankYouPage({ contact })));
+  site.get('/privacy', (req, res) => res.send(privacyPage({ contact })));
+
+  // The form on the Home page. Works without JavaScript: errors show next to the fields
+  // and nothing typed is lost; success goes to the Thank you page.
+  site.post('/join', (req, res) => {
+    // Hidden field that people never see: only bots fill it. Pretend it worked, save nothing.
+    if (String(req.body?.website ?? '').trim()) return res.redirect(303, '/thank-you');
+    if (!enquiryLimiter.take(req.ip)) return res.status(429).type('text').send('Too many tries. Please try again later.');
+    const { errors, value } = validateEnquiry(req.body);
+    if (Object.keys(errors).length) {
+      return res.status(422).send(homePage({ values: { ...value, consent: Boolean(req.body?.consent) }, errors, contact }));
+    }
+    repo.createEnquiry(value);
+    return res.redirect(303, '/thank-you');
+  });
+  app.use(site);
 
   // ---------- Public: the website form posts here ----------
   app.use('/api', (req, res, next) => {
@@ -85,7 +120,7 @@ export function createApp({ db, config }) {
     next();
   });
 
-  admin.use('/assets', express.static(path.join(here, '..', 'public'), { maxAge: '1h' }));
+  admin.use('/assets', express.static(publicDir, { maxAge: '1h' }));
 
   const getSession = (req) => {
     const token = readCookie(req, COOKIE);
@@ -202,6 +237,11 @@ export function createApp({ db, config }) {
   });
 
   app.use('/admin', admin);
+
+  app.use((req, res) => {
+    if (req.path.startsWith('/api')) return res.status(404).json({ ok: false, error: 'Not found.' });
+    return res.status(404).send(siteNotFoundPage({ contact }));
+  });
 
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {

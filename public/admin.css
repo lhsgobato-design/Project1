@@ -1,21 +1,4 @@
-/* project1 admin. Tokens come from the Brand guide ("Recreo") in project1 HQ.
-   Colours, fonts, text sizes, spacing and corners are the system's. Nothing else is used. */
-:root {
-  --main: #4B3FD6;
-  --accent: #C6F04D;
-  --bg-light: #FBF8F2;
-  --bg-dark: #17143A;
-  --text: #1A1833;
-  --text-soft: #5F5C7A;
-  --line: #E3DFEE;
-
-  --s4: 4px; --s8: 8px; --s16: 16px; --s24: 24px; --s32: 32px; --s48: 48px; --s64: 64px;
-  --r-small: 8px; --r-medium: 16px; --r-large: 24px;
-
-  --font-head: "Bricolage Grotesque", system-ui, sans-serif;
-  --font-body: "DM Sans", system-ui, sans-serif;
-}
-
+/* project1 admin. Colours, spacing, corners and fonts come from tokens.css (the Brand guide). */
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
@@ -137,7 +120,7 @@ textarea { resize: vertical; }
 .table td { padding: var(--s16); border-bottom: 1px solid var(--line); vertical-align: top; }
 .table tbody tr { position: relative; }
 .table td.email { min-width: 230px; overflow-wrap: break-word; }
-.row-link { color: var(--text); font-weight: 600; text-decoration: none; }
+.row-link { color: var(--text); text-decoration: none; }
 .row-link::after { content: ""; position: absolute; inset: 0; }
 .row-link:hover { text-decoration: underline; }
 .empty { padding: var(--s48) 0; color: var(--text-soft); }
