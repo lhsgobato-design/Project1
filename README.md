@@ -62,8 +62,8 @@ The first-screen designs are on the "Designs" page in the same Figma file.
 
 ## Not in this version
 
-- **Email to Luis on each new enquiry.** Needs an email service. The hook is the one place in `src/app.js`
-  after `repo.createEnquiry(...)`.
+- **Email to Luis on each new enquiry.** Needs an email service. The hook is the two form routes in `src/app.js`,
+  right after `repo.createEnquiry(...)`.
 - Final text. The Home blocks marked Draft or Blocked in the Copy page (problem, benefits, proof, questions, footer and Privacy)
   still need Luis's review, and real student quotes. The Privacy text has not been checked against Spanish and EU data rules.
 - A logo and a final first-screen picture.
