@@ -1,0 +1,168 @@
+/* project1 admin. Colours, spacing, corners and fonts come from tokens.css (the Brand guide). */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg-light);
+  color: var(--text);
+  font: 400 18px/1.5 var(--font-body);
+}
+
+/* Text styles: H2 40, H3 28, Body 18, Small 14, Label 14 */
+.h2 { font: 700 40px/1.15 var(--font-head); margin: 0 0 var(--s24); }
+.h3 { font: 600 28px/1.25 var(--font-head); margin: 0 0 var(--s16); }
+.small { font-size: 14px; line-height: 1.5; }
+.label {
+  font: 600 14px/1.3 var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.soft { color: var(--text-soft); }
+.break { overflow-wrap: anywhere; }
+.nowrap { white-space: nowrap; }
+
+a { color: var(--main); }
+:focus-visible { outline: 3px solid var(--main); outline-offset: 2px; }
+
+/* Top bar */
+.bar {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s16);
+  padding: var(--s24) var(--s64);
+  border-bottom: 1px solid var(--line);
+}
+.bar form { margin: 0; }
+.bar-name { display: flex; align-items: baseline; gap: var(--s16); }
+.wordmark { font: 600 28px/1.25 var(--font-head); color: var(--text); text-decoration: none; }
+
+.wrap { max-width: 1200px; margin: 0 auto; padding: var(--s48) var(--s64) var(--s64); }
+
+/* Buttons: Main (filled) and Second (outlined). Buttons sit on the light background. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: var(--s16) var(--s24);
+  border: 2px solid var(--main); border-radius: var(--r-medium);
+  background: var(--main); color: var(--bg-light);
+  font: 600 14px/1.3 var(--font-body); text-transform: uppercase; letter-spacing: 0.06em;
+  text-decoration: none; cursor: pointer;
+}
+.btn-second { background: transparent; color: var(--main); }
+summary.btn { list-style: none; }
+summary.btn::-webkit-details-marker { display: none; }
+
+/* Card */
+.card {
+  background: var(--bg-light);
+  border: 1px solid var(--line); border-radius: var(--r-large);
+  padding: var(--s24);
+}
+.card > :last-child { margin-bottom: 0; }
+
+/* Input field */
+.field { display: flex; flex-direction: column; gap: var(--s8); min-width: 0; }
+.field.grow { flex: 1 1 260px; }
+input, select, textarea {
+  width: 100%;
+  padding: var(--s16);
+  border: 1px solid var(--line); border-radius: var(--r-medium);
+  background: var(--bg-light); color: var(--text);
+  font: 400 18px/1.5 var(--font-body);
+}
+input::placeholder, textarea::placeholder { color: var(--text-soft); }
+textarea { resize: vertical; }
+.stack { display: flex; flex-direction: column; gap: var(--s16); }
+.stack .btn { align-self: flex-start; }
+
+/* Messages */
+.notice, .alert { margin: 0 0 var(--s24); padding: var(--s16); border-radius: var(--r-medium); }
+.notice { background: var(--accent); color: var(--text); }
+.alert { border: 2px solid var(--main); color: var(--text); margin: 0; }
+
+/* Login */
+.login { max-width: 440px; margin: var(--s64) auto 0; }
+
+/* Counts: a number with a label, one per status */
+.counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--s16); margin-bottom: var(--s32); }
+.count {
+  display: flex; flex-direction: column; gap: var(--s4);
+  padding: var(--s16) var(--s24);
+  border: 1px solid var(--line); border-radius: var(--r-medium);
+  color: var(--text-soft); text-decoration: none;
+}
+.count-n { font: 700 40px/1.15 var(--font-head); color: var(--main); }
+.count.is-active { border: 2px solid var(--main); padding: calc(var(--s16) - 1px) calc(var(--s24) - 1px); }
+
+/* Search and filter */
+.filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--s16); margin-bottom: var(--s16); }
+.filters .field:not(.grow) { flex: 0 1 200px; }
+.actions { display: flex; flex-wrap: wrap; gap: var(--s8); }
+.filters .btn { min-height: 61px; } /* same height as the input fields next to them */
+
+/* Status tags. Colours are system colours only. */
+.tag {
+  display: inline-block; padding: var(--s4) var(--s16);
+  border: 1.5px solid transparent; border-radius: 24px;
+  font: 600 14px/1.3 var(--font-body); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+}
+.tag-lead { background: var(--line); color: var(--text); }
+.tag-contacted { border-color: var(--main); color: var(--text); }
+.tag-call-booked { background: var(--main); color: var(--bg-light); }
+.tag-pilot { background: var(--accent); color: var(--text); }
+.tag-customer { background: var(--bg-dark); color: var(--bg-light); }
+.tag-lost { border-color: var(--text-soft); color: var(--text-soft); }
+
+/* Table */
+.table { width: 100%; border-collapse: collapse; margin-top: var(--s16); }
+.table th {
+  text-align: left; padding: var(--s8) var(--s16);
+  font: 600 14px/1.3 var(--font-body); text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-soft);
+  border-bottom: 1px solid var(--line);
+}
+.table td { padding: var(--s16); border-bottom: 1px solid var(--line); vertical-align: top; }
+.table tbody tr { position: relative; }
+.table td.email { min-width: 230px; overflow-wrap: break-word; }
+.row-link { color: var(--text); text-decoration: none; }
+.row-link::after { content: ""; position: absolute; inset: 0; }
+.row-link:hover { text-decoration: underline; }
+.empty { padding: var(--s48) 0; color: var(--text-soft); }
+
+/* Detail */
+.back { font: 600 14px/1.3 var(--font-body); text-transform: uppercase; letter-spacing: 0.06em; text-decoration: none; }
+.detail { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s24); align-items: start; }
+.detail .wide { grid-column: 1 / -1; }
+.answer { white-space: pre-wrap; overflow-wrap: anywhere; margin: var(--s4) 0 0; }
+.notes { list-style: none; margin: var(--s24) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--s16); }
+.notes li { border-top: 1px solid var(--line); padding-top: var(--s16); }
+.meanings { margin-top: var(--s24); }
+.meanings summary { cursor: pointer; color: var(--main); }
+.meanings ul { list-style: none; padding: 0; margin: var(--s16) 0 0; display: flex; flex-direction: column; gap: var(--s8); }
+.meanings li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s8) var(--s16); font-size: 14px; }
+.confirm summary { display: inline-flex; }
+.confirm[open] summary { margin-bottom: var(--s16); }
+.confirm form { margin-top: var(--s16); }
+
+/* Phone: the table becomes one card per enquiry */
+@media (max-width: 760px) {
+  .bar { padding: var(--s16); }
+  .wordmark { font-size: 28px; }
+  .wrap { padding: var(--s32) var(--s16) var(--s48); }
+  .login { margin-top: var(--s24); }
+  .counts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .detail { grid-template-columns: minmax(0, 1fr); }
+  .filters .field:not(.grow) { flex: 1 1 100%; }
+  .actions { width: 100%; }
+  .actions .btn { flex: 1 1 auto; }
+
+  .table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+  .table tr {
+    position: relative; margin-bottom: var(--s16); padding: var(--s16);
+    border: 1px solid var(--line); border-radius: var(--r-medium);
+  }
+  .table td { padding: var(--s4) 0; border: 0; }
+  .table td::before {
+    content: attr(data-label); display: block;
+    font: 600 14px/1.3 var(--font-body); text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-soft);
+  }
+  .table td:first-child::before { display: none; }
+  .table td:first-child { font-size: 18px; }
+}

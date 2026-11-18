@@ -1,0 +1,18 @@
+/* project1 design tokens, from the Brand guide ("Recreo") in project1 HQ.
+   The website and the admin both use these and nothing else. */
+:root {
+  --main: #4B3FD6;
+  --accent: #C6F04D;
+  --bg-light: #FBF8F2;
+  --bg-dark: #17143A;
+  --text: #1A1833;
+  --text-soft: #5F5C7A;
+  --line: #E3DFEE;
+
+  --s4: 4px; --s8: 8px; --s16: 16px; --s24: 24px; --s32: 32px; --s48: 48px; --s64: 64px;
+  --r-small: 8px; --r-medium: 16px; --r-large: 24px;
+
+  --font-head: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+}
+

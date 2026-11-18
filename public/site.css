@@ -1,0 +1,132 @@
+/* project1 website. Colours, spacing, corners and fonts come from tokens.css (the Brand guide).
+   Text sizes: H1 64, H2 40, H3 28, Body 18, Small 14, Label 14. On a phone H1 uses 40 and H2 uses 28. */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg-light);
+  color: var(--text);
+  font: 400 18px/1.5 var(--font-body);
+}
+
+.h1 { font: 700 64px/1.1 var(--font-head); margin: 0 0 var(--s24); }
+.h2 { font: 700 40px/1.15 var(--font-head); margin: 0 0 var(--s24); }
+.h3 { font: 600 28px/1.25 var(--font-head); margin: 0 0 var(--s16); }
+.small { font-size: 14px; line-height: 1.5; }
+.label { font: 600 14px/1.3 var(--font-body); text-transform: uppercase; letter-spacing: 0.06em; }
+.soft { color: var(--text-soft); }
+.lead { max-width: 46rem; margin: 0 0 var(--s24); }
+p { margin: 0 0 var(--s16); }
+
+a { color: var(--main); }
+:focus-visible { outline: 3px solid var(--main); outline-offset: 2px; }
+
+/* Top bar */
+.bar {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s16);
+  padding: var(--s24) var(--s64);
+  border-bottom: 1px solid var(--line);
+}
+.wordmark { font: 600 28px/1.25 var(--font-head); color: var(--text); text-decoration: none; margin: 0; }
+.short { display: none; }
+
+/* Buttons: Main (filled) and Second (outlined). Only on the light background. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: var(--s16) var(--s24);
+  border: 2px solid var(--main); border-radius: var(--r-medium);
+  background: var(--main); color: var(--bg-light);
+  font: 600 14px/1.3 var(--font-body); text-transform: uppercase; letter-spacing: 0.06em;
+  text-decoration: none; cursor: pointer;
+}
+.btn-second { background: transparent; color: var(--main); }
+
+/* Layout */
+.hero, .section, .page { max-width: 1440px; margin: 0 auto; padding: var(--s48) var(--s64) var(--s64); }
+.section { padding-top: var(--s48); padding-bottom: var(--s48); }
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) 560px; gap: var(--s64); align-items: center; }
+.hero-text p { max-width: 40rem; margin-bottom: var(--s24); }
+
+/* Picture: the questions, and where they lead */
+.picture {
+  background: var(--main); border-radius: var(--r-large);
+  padding: var(--s32); display: flex; flex-direction: column; gap: var(--s24);
+}
+.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s8); }
+.tag {
+  display: inline-block; padding: var(--s4) var(--s16);
+  border: 1.5px solid var(--accent); border-radius: var(--r-large);
+  background: var(--accent); color: var(--text);
+  font: 600 14px/1.3 var(--font-body); text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+/* Card */
+.card {
+  background: var(--bg-light);
+  border: 1px solid var(--line); border-radius: var(--r-large);
+  padding: var(--s24);
+}
+.card > :last-child { margin-bottom: 0; }
+.card .label { margin: 0 0 var(--s16); }
+.card .h3 { margin-bottom: var(--s16); }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s24); }
+
+/* Steps: a big number with its text */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s24); }
+.big { display: block; font: 700 40px/1.15 var(--font-head); color: var(--main); margin-bottom: var(--s8); }
+
+/* Dark band and footer: light text, secondary text in the line colour, no buttons */
+.band, .footer { background: var(--bg-dark); color: var(--bg-light); }
+.band .inner { max-width: 1440px; margin: 0 auto; padding: var(--s64); }
+.band .h2 { color: var(--bg-light); }
+.footer .inner { max-width: 1440px; margin: 0 auto; padding: var(--s48) var(--s64); }
+.footer a, .band a { color: var(--bg-light); }
+.on-dark-soft { color: var(--line); max-width: 46rem; }
+.footer .wordmark { color: var(--bg-light); display: block; margin-bottom: var(--s16); }
+
+/* Questions */
+.faq { max-width: 46rem; }
+.faq details { border-top: 1px solid var(--line); padding: var(--s16) 0; }
+.faq details:last-child { border-bottom: 1px solid var(--line); }
+.faq summary { cursor: pointer; margin: 0; }
+.faq summary.h3 { font-size: 28px; }
+.faq details p { margin: var(--s16) 0 0; }
+
+/* Form */
+.form { max-width: 560px; display: flex; flex-direction: column; gap: var(--s24); }
+.field { display: flex; flex-direction: column; gap: var(--s8); }
+input[type="text"], input[type="email"], textarea {
+  width: 100%; padding: var(--s16);
+  border: 1px solid var(--line); border-radius: var(--r-medium);
+  background: var(--bg-light); color: var(--text);
+  font: 400 18px/1.5 var(--font-body);
+}
+textarea { resize: vertical; }
+input[aria-invalid="true"], textarea[aria-invalid="true"] { border: 2px solid var(--main); }
+.check { display: flex; gap: var(--s16); align-items: flex-start; }
+.check input { width: 24px; height: 24px; margin: 0; accent-color: var(--main); flex: none; }
+.error { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text); }
+.notice { padding: var(--s16); border-radius: var(--r-medium); background: var(--accent); color: var(--text); max-width: 560px; }
+.form .btn { align-self: flex-start; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+#join { scroll-margin-top: var(--s16); }
+
+.page { max-width: 46rem; margin: 0 auto; }
+.page .h3 { margin-top: var(--s32); }
+
+/* Tablet and phone */
+@media (max-width: 960px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: var(--s32); }
+  .cards, .steps { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .bar { padding: var(--s16); }
+  .hero, .section, .page { padding-left: var(--s16); padding-right: var(--s16); }
+  .hero { padding-top: var(--s32); padding-bottom: var(--s48); }
+  .band .inner, .footer .inner { padding-left: var(--s16); padding-right: var(--s16); }
+  .h1 { font-size: 40px; line-height: 1.15; }
+  .h2 { font-size: 28px; line-height: 1.25; }
+  .picture { padding: var(--s24); gap: var(--s16); }
+  .long { display: none; }
+  .short { display: inline; }
+}
