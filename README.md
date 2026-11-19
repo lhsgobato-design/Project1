@@ -14,8 +14,9 @@ Visitors read the Home page and join the waiting list, and Luis follows up each 
   - The same email sent twice makes one enquiry.
   - The answer is the same for a new and a known email, so nobody can test which emails are on the list.
 - **Email to the owner** for each new enquiry (not for a repeat of the same email): name, email, answer and a link to the
-  enquiry in the admin. Replying to it writes to the student. Plain SMTP, so any email provider works. Off until
-  `NOTIFY_EMAIL` and `SMTP_URL` are set. It never slows down or breaks the form: if sending fails, the enquiry is
+  enquiry in the admin. Replying to it writes to the student. Sent over HTTPS with Resend (`RESEND_API_KEY`), which works on every host, or
+  over SMTP (`SMTP_URL`) where the host allows it (Railway only allows SMTP on its Pro plan). Off until `NOTIFY_EMAIL` and one
+  of the two are set. It never slows down or breaks the form: if sending fails, the enquiry is
   still saved and the visitor still sees the Thank you page.
 - **Admin side** at `/admin`, for one admin, with email and password. No public sign-up, no link from the website,
   and `noindex` on every page.
@@ -35,7 +36,7 @@ Needs Node 22.13 or newer. No other tools: the database is the SQLite built into
 npm install
 cp .env.example .env     # then set ADMIN_EMAIL, ADMIN_PASSWORD (12+ characters) and CONTACT_EMAIL
 npm start                # http://localhost:3000/admin
-npm test                 # 39 tests
+npm test                 # 45 tests
 ```
 
 - The first start creates the admin from `ADMIN_EMAIL` and `ADMIN_PASSWORD`, if there is none yet.

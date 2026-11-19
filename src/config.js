@@ -14,6 +14,7 @@ export function loadConfig(env = process.env) {
     notifyEmail: (env.NOTIFY_EMAIL || '').trim(),
     mailFrom: (env.MAIL_FROM || '').trim(),
     smtpUrl: (env.SMTP_URL || '').trim(),
+    resendApiKey: (env.RESEND_API_KEY || '').trim(),
     sessionDays: Number(env.SESSION_DAYS) || 7,
     adminEmail: (env.ADMIN_EMAIL || '').trim(),
     adminPassword: env.ADMIN_PASSWORD || '',
