@@ -44,7 +44,9 @@ export function createApp({ db, config, notifier = null }) {
   const saveEnquiry = (value) => {
     const { id, duplicate } = repo.createEnquiry(value);
     if (!duplicate && notifier) {
-      notifier({ id, ...value }).catch((error) => console.error('Email notification failed:', error.code || error.message));
+      notifier({ id, ...value })
+        .then(() => console.log(`Email notification sent for enquiry ${id}.`))
+        .catch((error) => console.error('Email notification failed:', error.code || error.message));
     }
   };
   const loginLimiter = createLimiter({ max: 10, windowMs: 15 * 60 * 1000 });
