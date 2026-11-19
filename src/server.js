@@ -6,7 +6,9 @@ import { createNotifier } from './notify.js';
 const config = loadConfig();
 const db = openDb(config.databasePath);
 
-if (await bootstrapAdmin(db, config)) console.log('Admin created from ADMIN_EMAIL and ADMIN_PASSWORD.');
+const adminResult = await bootstrapAdmin(db, config);
+if (adminResult === 'created') console.log('Admin created from ADMIN_EMAIL and ADMIN_PASSWORD.');
+if (adminResult === 'reset') console.log('Admin replaced from ADMIN_EMAIL and ADMIN_PASSWORD. Remove ADMIN_RESET now.');
 
 if (config.production && !config.contactEmail) {
   console.warn('CONTACT_EMAIL is not set: the footer and Privacy page show a placeholder where people ask for deletion.');

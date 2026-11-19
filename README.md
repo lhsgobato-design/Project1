@@ -35,11 +35,13 @@ Needs Node 22.13 or newer. No other tools: the database is the SQLite built into
 npm install
 cp .env.example .env     # then set ADMIN_EMAIL, ADMIN_PASSWORD (12+ characters) and CONTACT_EMAIL
 npm start                # http://localhost:3000/admin
-npm test                 # 38 tests
+npm test                 # 39 tests
 ```
 
 - The first start creates the admin from `ADMIN_EMAIL` and `ADMIN_PASSWORD`, if there is none yet.
   To change the email or password later: `npm run set-admin` (this signs the admin out everywhere).
+  On a host without a terminal, set the new `ADMIN_PASSWORD` and `ADMIN_RESET=true`, let it restart once,
+  then remove `ADMIN_RESET`.
 - `npm run seed:demo` adds three clearly marked `[TEST]` enquiries so the screens are not empty.
   It refuses to run when `NODE_ENV=production`.
 - Home is at `http://localhost:3000/`. `CONTACT_EMAIL` shows in the footer and on the Privacy page; until it is set they show

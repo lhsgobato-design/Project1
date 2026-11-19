@@ -17,5 +17,6 @@ export function loadConfig(env = process.env) {
     sessionDays: Number(env.SESSION_DAYS) || 7,
     adminEmail: (env.ADMIN_EMAIL || '').trim(),
     adminPassword: env.ADMIN_PASSWORD || '',
+    adminReset: env.ADMIN_RESET === 'true',
   };
 }
