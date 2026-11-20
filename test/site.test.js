@@ -42,6 +42,7 @@ describe('public pages', () => {
     assert.match(html, /What project1 helps you understand/);
     for (const topic of ['How grading works\\.', 'How classes are run\\.', 'How your schedule works\\.']) assert.match(html, new RegExp(topic));
     assert.match(html, /understand how grading, classes and schedules work/);
+    assert.match(html, /without putting their grades at risk, because project1 is your number one friend\./);
     assert.match(html, /Three steps/);
     assert.match(html, /Why we are doing this/);
     assert.match(html, /Who it is for/);

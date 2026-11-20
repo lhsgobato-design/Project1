@@ -10,7 +10,7 @@ const DESCRIPTION =
 const QUESTIONS = ['How does grading work?', 'What if I fail?', 'How do I enrol?', 'How do I study here?'];
 
 const FAQ = [
-  ['What is project1?', 'We are building help for students who came from abroad to understand how grading, classes and schedules work at Spanish universities. We are at the start, so we are talking to students first.'],
+  ['What is project1?', 'project1 is a way for students from abroad to understand how their new school works without putting their grades at risk, because project1 is your number one friend.'],
   ['Does joining cost anything?', 'No. This website takes no payments.'],
   ['What will it cost later?', 'We have not set a price yet.'],
   ['What happens after I join?', 'We read your answer and may write to you.'],
