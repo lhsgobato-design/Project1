@@ -95,3 +95,45 @@ describe('email on each new enquiry', () => {
     server.close(); db.close();
   });
 });
+
+describe('sending over HTTPS (Resend)', () => {
+  const enquiry = { id: 3, name: 'Ana Student', email: 'ana@example.test', answer: 'Exams' };
+
+  it('posts one request with the key, the shared sender and a reply address', async () => {
+    const calls = [];
+    const fetchFn = async (url, init) => { calls.push({ url, init }); return { ok: true, status: 200 }; };
+    const notify = createNotifier({ to: 'owner@example.test', resendApiKey: 'key-for-test', publicUrl: 'https://site.example.test', fetchFn });
+    await notify(enquiry);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].url, 'https://api.resend.com/emails');
+    assert.equal(calls[0].init.headers.Authorization, 'Bearer key-for-test');
+    const body = JSON.parse(calls[0].init.body);
+    assert.equal(body.from, 'project1 <onboarding@resend.dev>');
+    assert.deepEqual(body.to, ['owner@example.test']);
+    assert.equal(body.reply_to, 'ana@example.test');
+    assert.equal(body.subject, 'New enquiry: Ana Student');
+    assert.match(body.text, /https:\/\/site\.example\.test\/admin\/enquiries\/3/);
+  });
+
+  it('uses MAIL_FROM when it is set', async () => {
+    const calls = [];
+    const fetchFn = async (url, init) => { calls.push(JSON.parse(init.body)); return { ok: true, status: 200 }; };
+    const notify = createNotifier({ to: 'owner@example.test', from: 'project1 <hello@example.test>', resendApiKey: 'k', fetchFn });
+    await notify(enquiry);
+    assert.equal(calls[0].from, 'project1 <hello@example.test>');
+  });
+
+  it('fails with the HTTP status when Resend refuses, without the key in the error', async () => {
+    const fetchFn = async () => ({ ok: false, status: 403 });
+    const notify = createNotifier({ to: 'owner@example.test', resendApiKey: 'secret-key-value', fetchFn });
+    await assert.rejects(() => notify(enquiry), (error) => error.code === 'RESEND_403' && !String(error.message).includes('secret-key-value'));
+  });
+
+  it('prefers Resend over SMTP when both are set', async () => {
+    let used = '';
+    const fetchFn = async () => { used = 'resend'; return { ok: true, status: 200 }; };
+    const notify = createNotifier({ to: 'owner@example.test', resendApiKey: 'k', smtpUrl: 'smtp://nobody:nothing@127.0.0.1:1', fetchFn });
+    await notify(enquiry);
+    assert.equal(used, 'resend');
+  });
+});

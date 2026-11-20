@@ -22,15 +22,19 @@ function readCookie(req, name) {
 }
 
 // First start: create the one admin from ADMIN_EMAIL and ADMIN_PASSWORD, if there is none yet.
+// With ADMIN_RESET=true the admin is replaced on start (a way to set a new password on a host
+// without a terminal). Remove ADMIN_RESET afterwards: every restart would sign the admin out.
+// Returns 'created', 'reset' or false.
 export async function bootstrapAdmin(db, config) {
   const repo = makeRepo(db);
-  if (repo.hasAdmin()) return false;
+  const exists = repo.hasAdmin();
+  if (exists && !config.adminReset) return false;
   if (!config.adminEmail || !config.adminPassword) return false;
   if (config.adminPassword.length < MIN_PASSWORD_LENGTH) {
     throw new Error(`ADMIN_PASSWORD must be at least ${MIN_PASSWORD_LENGTH} characters.`);
   }
   repo.setAdmin(config.adminEmail, await hashPassword(config.adminPassword));
-  return true;
+  return exists ? 'reset' : 'created';
 }
 
 export function createApp({ db, config, notifier = null }) {
@@ -40,7 +44,9 @@ export function createApp({ db, config, notifier = null }) {
   const saveEnquiry = (value) => {
     const { id, duplicate } = repo.createEnquiry(value);
     if (!duplicate && notifier) {
-      notifier({ id, ...value }).catch((error) => console.error('Email notification failed:', error.code || error.message));
+      notifier({ id, ...value })
+        .then(() => console.log(`Email notification sent for enquiry ${id}.`))
+        .catch((error) => console.error('Email notification failed:', error.code || error.message));
     }
   };
   const loginLimiter = createLimiter({ max: 10, windowMs: 15 * 60 * 1000 });
