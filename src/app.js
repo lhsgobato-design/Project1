@@ -62,6 +62,12 @@ export function createApp({ db, config, notifier = null }) {
   // ---------- Public website ----------
   const site = express.Router();
   const contact = config.contactEmail;
+  const legal = {
+    name: config.controllerName,
+    address: config.controllerAddress,
+    taxId: config.controllerTaxId,
+    retention: config.retention,
+  };
 
   site.use((req, res, next) => {
     // The copy is still a draft: ask search engines to skip the site until ALLOW_INDEXING=true.
@@ -70,14 +76,14 @@ export function createApp({ db, config, notifier = null }) {
       'Referrer-Policy': 'strict-origin-when-cross-origin',
       'X-Content-Type-Options': 'nosniff',
       'Content-Security-Policy':
-        "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
+        "default-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
     });
     next();
   });
   site.use('/assets', express.static(publicDir, { maxAge: '1h' }));
-  site.get('/', (req, res) => res.send(homePage({ contact })));
+  site.get('/', (req, res) => res.send(homePage({ contact, legal })));
   site.get('/thank-you', (req, res) => res.send(thankYouPage({ contact })));
-  site.get('/privacy', (req, res) => res.send(privacyPage({ contact })));
+  site.get('/privacy', (req, res) => res.send(privacyPage({ contact, legal })));
 
   // The form on the Home page. Works without JavaScript: errors show next to the fields
   // and nothing typed is lost; success goes to the Thank you page.
@@ -87,7 +93,7 @@ export function createApp({ db, config, notifier = null }) {
     if (!enquiryLimiter.take(req.ip)) return res.status(429).type('text').send('Too many tries. Please try again later.');
     const { errors, value } = validateEnquiry(req.body);
     if (Object.keys(errors).length) {
-      return res.status(422).send(homePage({ values: { ...value, consent: Boolean(req.body?.consent) }, errors, contact }));
+      return res.status(422).send(homePage({ values: { ...value, consent: Boolean(req.body?.consent) }, errors, contact, legal }));
     }
     saveEnquiry(value);
     return res.redirect(303, '/thank-you');
@@ -130,7 +136,7 @@ export function createApp({ db, config, notifier = null }) {
       'Referrer-Policy': 'no-referrer',
       'X-Content-Type-Options': 'nosniff',
       'Content-Security-Policy':
-        "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
+        "default-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
     });
     next();
   });

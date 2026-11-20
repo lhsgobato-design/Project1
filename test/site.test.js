@@ -19,7 +19,14 @@ const join = (body) =>
   });
 
 before(async () => {
-  const config = { ...loadConfig({}), contactEmail: 'hello@example.test' };
+  const config = {
+    ...loadConfig({}),
+    contactEmail: 'hello@example.test',
+    controllerName: 'Test Founder SL',
+    controllerAddress: 'Carrer de Prova 1, Barcelona',
+    controllerTaxId: 'B00000000',
+    retention: 'Twelve months after your last message',
+  };
   db = openDb(':memory:');
   server = createApp({ db, config }).listen(0);
   await new Promise((resolve) => server.once('listening', resolve));
@@ -67,7 +74,6 @@ describe('public pages', () => {
     assert.match(await thanks.text(), /You're on the list\./);
     const privacy = await (await get('/privacy')).text();
     assert.match(privacy, /What we collect/);
-    assert.match(privacy, /How to ask for deletion/);
     assert.match(privacy, /hello@example\.test/);
     const missing = await get('/no-such-page');
     assert.equal(missing.status, 404);
@@ -82,6 +88,57 @@ describe('public pages', () => {
     assert.equal(tokens.status, 200);
     assert.match(await tokens.text(), /--main: #4B3FD6/);
     assert.equal((await get('/assets/site.css')).status, 200);
+  });
+});
+
+describe('privacy information (GDPR Article 13 and Spanish LOPDGDD)', () => {
+  it('names who is responsible, the basis, recipients, transfers, retention, rights and the complaint route', async () => {
+    const html = await (await get('/privacy')).text();
+    for (const text of [
+      'Who is responsible', 'Test Founder SL', 'Carrer de Prova 1, Barcelona', 'Tax ID: B00000000',
+      'Why we use it, and on what basis', 'take back your agreement',
+      'Do you have to give it\\?', 'You must be 14 or older',
+      'Railway', 'Resend', 'Moving details outside the EU', 'standard contractual clauses',
+      'How long we keep it', 'Twelve months after your last message',
+      'Your rights', 'delete them', 'limit how we use them', 'give them to you in a file',
+      'Agencia Española de Protección de Datos', 'www\\.aepd\\.es',
+      'We do not use cookies or tracking tools',
+    ]) assert.match(html, new RegExp(text), text);
+  });
+
+  it('shows the short first layer next to the form, with a link to the full page', async () => {
+    const html = await (await get('/')).text();
+    assert.match(html, /Data protection\.<\/strong> Responsible: Test Founder SL\. Purpose: to contact you about project1\. Basis: your consent\. You must be 14 or older\./);
+    assert.match(html, /href="\/privacy">Read the full Privacy page\./);
+  });
+
+  it('shows honest placeholders until the details are set', async () => {
+    const db2 = openDb(':memory:');
+    const server2 = createApp({ db: db2, config: loadConfig({}) }).listen(0);
+    await new Promise((resolve) => server2.once('listening', resolve));
+    const html = await (await fetch(`http://127.0.0.1:${server2.address().port}/privacy`)).text();
+    for (const placeholder of ['[name of the person or company responsible to be added]', '[address to be added]', '[how long we keep your details to be added]']) assert.ok(html.includes(placeholder), placeholder);
+    assert.doesNotMatch(html, /Tax ID/);
+    server2.close();
+    db2.close();
+  });
+
+  it('loads nothing from other companies: fonts come from this website', async () => {
+    for (const path of ['/', '/privacy', '/thank-you']) {
+      const res = await get(path);
+      const html = await res.text();
+      assert.doesNotMatch(html, /https?:\/\/(?!www\.aepd\.es)/, `${path} has no outside address`);
+      const csp = res.headers.get('content-security-policy');
+      assert.match(csp, /style-src 'self';/);
+      assert.match(csp, /font-src 'self';/);
+      assert.doesNotMatch(csp, /google/);
+      assert.equal(res.headers.get('set-cookie'), null, 'no cookies on public pages');
+    }
+    const css = await (await get('/assets/fonts.css')).text();
+    assert.match(css, /font-family: "Bricolage Grotesque"/);
+    const font = await get('/assets/fonts/dm-sans-latin-400-normal.woff2');
+    assert.equal(font.status, 200);
+    assert.equal(font.headers.get('content-type'), 'font/woff2');
   });
 });
 

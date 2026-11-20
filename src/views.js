@@ -30,9 +30,7 @@ function layout({ title, body, csrf, nav = true }) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>${esc(title)} · project1 admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=DM+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="/admin/assets/fonts.css">
 <link rel="stylesheet" href="/admin/assets/tokens.css">
 <link rel="stylesheet" href="/admin/assets/admin.css">
 </head>
