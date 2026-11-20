@@ -59,7 +59,7 @@ describe('public pages', () => {
     assert.match(html, /Who it is for/);
     assert.equal((html.match(/<details>/g) || []).length, 6, 'six questions');
     for (const field of ['name="name"', 'name="email"', 'name="answer"', 'name="consent"']) assert.ok(html.includes(field), field);
-    assert.match(html, /What is the hardest part of studying in Spain for you\?/);
+    assert.match(html, /What is your biggest doubt about studying in Spain\?/);
     assert.match(html, /I agree to be contacted by project1/);
     assert.match(html, /mailto:hello@example\.test/);
     assert.doesNotMatch(html, /\[Name\]|\[Answer\]|Lorem/, 'no placeholder text');

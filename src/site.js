@@ -95,7 +95,7 @@ function joinForm({ values, errors, contact, legal }) {
       ${fieldError(errors, 'email')}
     </div>
     <div class="field">
-      <label class="label" for="answer">What is the hardest part of studying in Spain for you? <span class="soft">Optional</span></label>
+      <label class="label" for="answer">What is your biggest doubt about studying in Spain? <span class="soft">Optional</span></label>
       <textarea id="answer" name="answer" rows="4" maxlength="2000"${invalid('answer')}>${esc(values.answer)}</textarea>
       ${fieldError(errors, 'answer')}
     </div>

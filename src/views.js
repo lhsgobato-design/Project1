@@ -152,7 +152,7 @@ ${message ? `<p class="notice" role="status">${esc(MESSAGES[message] || '')}</p>
     <p class="label soft">Contact</p>
     <p class="break"><a href="mailto:${esc(enquiry.email)}">${esc(enquiry.email)}</a></p>
     <p class="small soft">Sent on ${esc(fmtDateTime(enquiry.created_at))}. Agreed to be contacted on ${esc(fmtDateTime(enquiry.consent_at))}.</p>
-    <p class="label soft">What is the hardest part of studying in Spain for you?</p>
+    <p class="label soft">What is your biggest doubt about studying in Spain?</p>
     <p class="answer">${enquiry.answer ? esc(enquiry.answer) : '<span class="soft">No answer given.</span>'}</p>
   </section>
 
