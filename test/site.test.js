@@ -50,13 +50,16 @@ describe('public pages', () => {
     for (const topic of ['How grading works\\.', 'How classes are run\\.', 'How your schedule works\\.']) assert.match(html, new RegExp(topic));
     assert.match(html, /understand how grading, classes and schedules work/);
     assert.match(html, /without putting their grades at risk, because project1 is your number one friend\./);
+    assert.match(html, /<h2 class="h2">Tell us your doubt\.<\/h2>/);
+    assert.match(html, /Join the waiting list and tell us your doubt\./);
+    assert.doesNotMatch(html, /tell us what is hardest/i);
     assert.match(html, /Three steps/);
     assert.match(html, /When project1 is ready for the first students, we invite you to try it\./);
     assert.match(html, /Why we are doing this/);
     assert.match(html, /Who it is for/);
     assert.equal((html.match(/<details>/g) || []).length, 6, 'six questions');
     for (const field of ['name="name"', 'name="email"', 'name="answer"', 'name="consent"']) assert.ok(html.includes(field), field);
-    assert.match(html, /What is the hardest part of studying in Spain for you\?/);
+    assert.match(html, /What is your biggest doubt about studying in Spain\?/);
     assert.match(html, /I agree to be contacted by project1/);
     assert.match(html, /mailto:hello@example\.test/);
     assert.doesNotMatch(html, /\[Name\]|\[Answer\]|Lorem/, 'no placeholder text');
