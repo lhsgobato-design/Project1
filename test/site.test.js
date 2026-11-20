@@ -39,6 +39,9 @@ describe('public pages', () => {
     assert.match(html, /New to the Spanish university system\?/);
     for (const q of ['How does grading work?', 'What if I fail?', 'How do I enrol?', 'How do I study here?']) assert.match(html, new RegExp(q.replace('?', '\\?')));
     assert.match(html, /<h2 class="h2">Nobody explains how it works\.<\/h2>/);
+    assert.match(html, /What project1 helps you understand/);
+    for (const topic of ['How grading works\\.', 'How classes are run\\.', 'How your schedule works\\.']) assert.match(html, new RegExp(topic));
+    assert.match(html, /understand how grading, classes and schedules work/);
     assert.match(html, /Three steps/);
     assert.match(html, /Why we are doing this/);
     assert.match(html, /Who it is for/);

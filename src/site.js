@@ -4,13 +4,13 @@ import { esc } from './views.js';
 // Each block is marked there as Ready, Draft or Blocked. Change the text there first.
 
 const LINE =
-  'project1 is being built for students who came from abroad to study at a university in Barcelona. Join the waiting list and tell us what is hardest.';
+  'project1 is being built to help students who came from abroad to study at a university in Barcelona understand how grading, classes and schedules work. Join the waiting list and tell us what is hardest.';
 const DESCRIPTION =
-  'project1 is being built for students who came from abroad to study at a university in Barcelona. Join the waiting list.';
+  'project1 is being built to help students who came from abroad to study in Barcelona understand how grading, classes and schedules work. Join the waiting list.';
 const QUESTIONS = ['How does grading work?', 'What if I fail?', 'How do I enrol?', 'How do I study here?'];
 
 const FAQ = [
-  ['What is project1?', 'We are building help for students who came from abroad to study in Spain. We are at the start, so we are talking to students first.'],
+  ['What is project1?', 'We are building help for students who came from abroad to understand how grading, classes and schedules work at Spanish universities. We are at the start, so we are talking to students first.'],
   ['Does joining cost anything?', 'No. This website takes no payments.'],
   ['What will it cost later?', 'We have not set a price yet.'],
   ['What happens after I join?', 'We read your answer and may write to you.'],
@@ -134,13 +134,14 @@ export function homePage({ values = {}, errors = {}, contact = '' } = {}) {
 </section>
 
 <section class="section">
-  <p class="kicker"><span class="tag">What you get</span></p>
-  <h2 class="h2">What you get by joining</h2>
+  <p class="kicker"><span class="tag">What we help with</span></p>
+  <h2 class="h2">What project1 helps you understand</h2>
   <div class="cards">
-    <article class="card card-main"><h3 class="h3">A place on the waiting list.</h3></article>
-    <article class="card"><h3 class="h3">A say in what we build.</h3><p>You tell us what is hardest, and we read it.</p></article>
-    <article class="card card-accent"><h3 class="h3">A first look.</h3><p>When there is something to try, you hear first.</p></article>
+    <article class="card card-main"><h3 class="h3">How grading works.</h3><p>How marks are given and what counts.</p></article>
+    <article class="card"><h3 class="h3">How classes are run.</h3><p>What a class looks like and what is expected of you.</p></article>
+    <article class="card card-accent"><h3 class="h3">How your schedule works.</h3><p>How your timetable is set up and what to plan for.</p></article>
   </div>
+  <p class="lead more">And the other things nobody explains when you arrive.</p>
 </section>
 
 <section class="section">
