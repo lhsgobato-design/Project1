@@ -3,7 +3,6 @@ import { esc } from './views.js';
 // The text on these pages is the draft in the Copy page in project1 HQ.
 // Each block is marked there as Ready, Draft or Blocked. Change the text there first.
 
-const HEADLINE = "New to the Spanish university system? You don't have to figure it out alone.";
 const LINE =
   'project1 is being built for students who came from abroad to study at a university in Barcelona. Join the waiting list and tell us what is hardest.';
 const DESCRIPTION =
@@ -112,7 +111,7 @@ export function homePage({ values = {}, errors = {}, contact = '' } = {}) {
 <main>
 <section class="hero">
   <div class="hero-text">
-    <h1 class="h1">${esc(HEADLINE)}</h1>
+    <h1 class="h1">New to the Spanish university system? You don't have to figure it out <mark>alone.</mark></h1>
     <p>${esc(LINE)}</p>
     ${joinButton()}
   </div>
@@ -126,58 +125,74 @@ export function homePage({ values = {}, errors = {}, contact = '' } = {}) {
   </aside>
 </section>
 
-<section class="section">
-  <h2 class="h2">Nobody explains how it works.</h2>
-  <p class="lead">Academies teach you the subject. University offices help with paperwork. Lawyers help with the visa. But how does grading work? What happens if you fail? How do you enrol, and how do you study here? You are expected to just know.</p>
+<section class="section split">
+  <div>
+    <p class="kicker"><span class="tag">The problem</span></p>
+    <h2 class="h2">Nobody explains how it works.</h2>
+  </div>
+  <p class="lead statement">Academies teach you the subject. University offices help with paperwork. Lawyers help with the visa. But how does grading work? What happens if you fail? How do you enrol, and how do you study here? You are expected to just know.</p>
 </section>
 
 <section class="section">
+  <p class="kicker"><span class="tag">What you get</span></p>
   <h2 class="h2">What you get by joining</h2>
   <div class="cards">
-    <article class="card"><h3 class="h3">A place on the waiting list.</h3></article>
+    <article class="card card-main"><h3 class="h3">A place on the waiting list.</h3></article>
     <article class="card"><h3 class="h3">A say in what we build.</h3><p>You tell us what is hardest, and we read it.</p></article>
-    <article class="card"><h3 class="h3">A first look.</h3><p>When there is something to try, you hear first.</p></article>
+    <article class="card card-accent"><h3 class="h3">A first look.</h3><p>When there is something to try, you hear first.</p></article>
   </div>
 </section>
 
 <section class="section">
+  <p class="kicker"><span class="tag">How it works</span></p>
   <h2 class="h2">Three steps</h2>
   <ol class="steps">
-    <li><span class="big">1</span><p>Leave your name, email and one answer. It takes a minute.</p></li>
-    <li><span class="big">2</span><p>We read it and may write to you.</p></li>
-    <li><span class="big">3</span><p>When there is something to try, we invite you.</p></li>
+    <li class="card"><span class="big">1</span><p>Leave your name, email and one answer. It takes a minute.</p></li>
+    <li class="card"><span class="big">2</span><p>We read it and may write to you.</p></li>
+    <li class="card"><span class="big">3</span><p>When there is something to try, we invite you.</p></li>
   </ol>
 </section>
 
 <section class="band">
   <div class="inner">
+    <p class="kicker"><span class="tag">Our reason</span></p>
     <h2 class="h2">Why we are doing this</h2>
     <p class="lead">We looked for a service in Barcelona whose main job is to help international students understand how Spanish universities work. We searched in Spanish, Catalan and English in November 2026. We found none. We are at the start, so we have no results to show yet, and we will not make any up.</p>
   </div>
 </section>
 
 <section class="section">
+  <p class="kicker"><span class="tag">Is it you?</span></p>
   <h2 class="h2">Who it is for</h2>
-  <p class="lead">Students who came from abroad and study at a university in Barcelona.</p>
+  <blockquote class="pull h3">Students who came from abroad and study at a university in Barcelona.</blockquote>
+</section>
+
+<section class="band band-main">
+  <div class="inner">
+    <p class="kicker"><span class="tag">The offer</span></p>
+    <h2 class="h2">Join the waiting list</h2>
+    <div class="card offer">
+      <p class="lead">Leave your name, email and one answer. There is nothing to pay: this website takes no payments, and we have not set a price yet.</p>
+      ${joinButton()}
+    </div>
+  </div>
 </section>
 
 <section class="section">
-  <h2 class="h2">Join the waiting list</h2>
-  <p class="lead">Leave your name, email and one answer. There is nothing to pay: this website takes no payments, and we have not set a price yet.</p>
-  ${joinButton()}
-</section>
-
-<section class="section">
+  <p class="kicker"><span class="tag">Good to know</span></p>
   <h2 class="h2">Questions</h2>
   <div class="faq">
     ${FAQ.map(([q, a]) => `<details><summary class="h3">${esc(q)}</summary><p>${esc(a)}</p></details>`).join('\n    ')}
   </div>
 </section>
 
-<section class="section" id="join">
-  <h2 class="h2">Tell us what is hardest.</h2>
-  <p class="lead">Join the waiting list. It takes a minute.</p>
-  ${hasErrors ? '<p class="notice" role="alert">Something is missing. Nothing you typed is lost.</p>' : ''}
+<section class="section split" id="join">
+  <div>
+    <p class="kicker"><span class="tag">Join</span></p>
+    <h2 class="h2">Tell us what is hardest.</h2>
+    <p class="lead">Join the waiting list. It takes a minute.</p>
+    ${hasErrors ? '<p class="notice" role="alert">Something is missing. Nothing you typed is lost.</p>' : ''}
+  </div>
   ${joinForm({ values, errors })}
 </section>
 </main>

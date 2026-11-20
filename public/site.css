@@ -1,6 +1,9 @@
-/* project1 website. Colours, spacing, corners and fonts come from tokens.css (the Brand guide).
-   Text sizes: H1 64, H2 40, H3 28, Body 18, Small 14, Label 14. On a phone H1 uses 40 and H2 uses 28. */
+/* project1 website. Colours, spacing, corners and fonts come from tokens.css (the Brand guide, "Recreo").
+   Text sizes: H1 64, H2 40, H3 28, Body 18, Small 14, Label 14. On a phone H1 uses 40 and H2 uses 28.
+   Rules from the guide: dark text on the light background and on accent; the light colour as text on main and on dark;
+   accent only as a fill (or on dark), never as text on light; buttons only on light backgrounds. */
 *, *::before, *::after { box-sizing: border-box; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 
 body {
   margin: 0;
@@ -21,10 +24,12 @@ p { margin: 0 0 var(--s16); }
 a { color: var(--main); }
 :focus-visible { outline: 3px solid var(--main); outline-offset: 2px; }
 
-/* Top bar */
+/* Top bar: stays in view so the button is always one tap away */
 .bar {
+  position: sticky; top: 0; z-index: 10;
   display: flex; align-items: center; justify-content: space-between; gap: var(--s16);
-  padding: var(--s24) var(--s64);
+  padding: var(--s16) var(--s64);
+  background: var(--bg-light);
   border-bottom: 1px solid var(--line);
 }
 .wordmark { font: 600 28px/1.25 var(--font-head); color: var(--text); text-decoration: none; margin: 0; }
@@ -41,24 +46,34 @@ a { color: var(--main); }
 }
 .btn-second { background: transparent; color: var(--main); }
 
-/* Layout */
-.hero, .section, .page { max-width: 1440px; margin: 0 auto; padding: var(--s48) var(--s64) var(--s64); }
-.section { padding-top: var(--s48); padding-bottom: var(--s48); }
-.hero { display: grid; grid-template-columns: minmax(0, 1fr) 560px; gap: var(--s64); align-items: center; }
-.hero-text p { max-width: 40rem; margin-bottom: var(--s24); }
-
-/* Picture: the questions, and where they lead */
-.picture {
-  background: var(--main); border-radius: var(--r-large);
-  padding: var(--s32); display: flex; flex-direction: column; gap: var(--s24);
-}
-.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s8); }
+/* Tag: the accent pill. Used as a small heading above each section. */
 .tag {
   display: inline-block; padding: var(--s4) var(--s16);
   border: 1.5px solid var(--accent); border-radius: var(--r-large);
   background: var(--accent); color: var(--text);
   font: 600 14px/1.3 var(--font-body); text-transform: uppercase; letter-spacing: 0.06em;
 }
+.kicker { margin: 0 0 var(--s16); }
+
+/* Layout */
+.hero, .section, .page { max-width: 1440px; margin: 0 auto; padding: var(--s48) var(--s64) var(--s64); }
+.section { padding-top: var(--s64); padding-bottom: var(--s64); }
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) 560px; gap: var(--s64); align-items: center; padding-top: var(--s64); padding-bottom: var(--s64); }
+.hero-text p { max-width: 40rem; margin-bottom: var(--s32); }
+.split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--s64); align-items: start; }
+.split .h2 { margin-bottom: 0; }
+
+/* The one highlighted word in the headline: accent as a fill, dark text on it */
+mark { background: var(--accent); color: var(--text); padding: 0 var(--s8); border-radius: var(--r-small); }
+
+/* Picture: the questions, and where they lead */
+.picture {
+  background: var(--main); border-radius: var(--r-large);
+  padding: var(--s32); display: flex; flex-direction: column; gap: var(--s24);
+}
+.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s8) var(--s16); }
+.chips .tag:nth-child(odd) { transform: rotate(-2deg); }
+.chips .tag:nth-child(even) { transform: rotate(2deg); }
 
 /* Card */
 .card {
@@ -69,31 +84,55 @@ a { color: var(--main); }
 .card > :last-child { margin-bottom: 0; }
 .card .label { margin: 0 0 var(--s16); }
 .card .h3 { margin-bottom: var(--s16); }
-.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s24); }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s24); margin-top: var(--s32); }
+.cards .card { padding: var(--s32); min-height: 220px; display: flex; flex-direction: column; justify-content: flex-end; }
+.card-main { background: var(--main); border-color: var(--main); color: var(--bg-light); }
+.card-accent { background: var(--accent); border-color: var(--accent); color: var(--text); }
 
-/* Steps: a big number with its text */
-.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s24); }
-.big { display: block; font: 700 40px/1.15 var(--font-head); color: var(--main); margin-bottom: var(--s8); }
+/* Problem text, and the statement under "Who it is for": a main bar on the left, like the Quote block */
+.statement, .pull { border-left: 6px solid var(--main); padding-left: var(--s24); margin: 0; }
+.pull { max-width: 46rem; margin-top: var(--s32); }
 
-/* Dark band and footer: light text, secondary text in the line colour, no buttons */
+/* Steps: a big number in an accent circle, with its text */
+.steps { list-style: none; margin: var(--s32) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s24); }
+.steps .card { padding: var(--s32); }
+.big {
+  display: flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; margin-bottom: var(--s24);
+  border-radius: 50%; background: var(--accent); color: var(--text);
+  font: 700 40px/1 var(--font-head);
+}
+
+/* Dark and main bands: light text, secondary text in the line colour, no buttons directly on them */
 .band, .footer { background: var(--bg-dark); color: var(--bg-light); }
+.band-main { background: var(--main); }
 .band .inner { max-width: 1440px; margin: 0 auto; padding: var(--s64); }
 .band .h2 { color: var(--bg-light); }
+.band .lead { color: var(--bg-light); }
 .footer .inner { max-width: 1440px; margin: 0 auto; padding: var(--s48) var(--s64); }
-.footer a, .band a { color: var(--bg-light); }
+.footer a, .band a:not(.btn) { color: var(--bg-light); }
 .on-dark-soft { color: var(--line); max-width: 46rem; }
 .footer .wordmark { color: var(--bg-light); display: block; margin-bottom: var(--s16); }
+/* The offer: a light card on the main band, so the button sits on a light background */
+.offer { max-width: 46rem; color: var(--text); margin-top: var(--s32); padding: var(--s32); }
+.band-main .offer .lead { color: var(--text); }
 
 /* Questions */
-.faq { max-width: 46rem; }
+.faq { max-width: 46rem; margin-top: var(--s32); }
 .faq details { border-top: 1px solid var(--line); padding: var(--s16) 0; }
 .faq details:last-child { border-bottom: 1px solid var(--line); }
-.faq summary { cursor: pointer; margin: 0; }
-.faq summary.h3 { font-size: 28px; }
+.faq summary { cursor: pointer; margin: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--s16); list-style: none; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: "+"; flex: none; display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: var(--text);
+  font: 700 28px/1 var(--font-head);
+}
+.faq details[open] summary::after { content: "\2013"; }
 .faq details p { margin: var(--s16) 0 0; }
 
 /* Form */
-.form { max-width: 560px; display: flex; flex-direction: column; gap: var(--s24); }
+.form { display: flex; flex-direction: column; gap: var(--s24); padding: var(--s32); }
 .field { display: flex; flex-direction: column; gap: var(--s8); }
 input[type="text"], input[type="email"], textarea {
   width: 100%; padding: var(--s16);
@@ -106,27 +145,31 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border: 2px solid va
 .check { display: flex; gap: var(--s16); align-items: flex-start; }
 .check input { width: 24px; height: 24px; margin: 0; accent-color: var(--main); flex: none; }
 .error { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text); }
-.notice { padding: var(--s16); border-radius: var(--r-medium); background: var(--accent); color: var(--text); max-width: 560px; }
+.notice { padding: var(--s16); border-radius: var(--r-medium); background: var(--accent); color: var(--text); max-width: 560px; margin-top: var(--s24); }
 .form .btn { align-self: flex-start; }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-#join { scroll-margin-top: var(--s16); }
+#join { scroll-margin-top: var(--s64); }
 
 .page { max-width: 46rem; margin: 0 auto; }
 .page .h3 { margin-top: var(--s32); }
 
 /* Tablet and phone */
 @media (max-width: 960px) {
-  .hero { grid-template-columns: minmax(0, 1fr); gap: var(--s32); }
+  .hero, .split { grid-template-columns: minmax(0, 1fr); gap: var(--s32); }
   .cards, .steps { grid-template-columns: minmax(0, 1fr); }
+  .cards .card { min-height: 0; }
 }
 @media (max-width: 760px) {
   .bar { padding: var(--s16); }
   .hero, .section, .page { padding-left: var(--s16); padding-right: var(--s16); }
   .hero { padding-top: var(--s32); padding-bottom: var(--s48); }
+  .section { padding-top: var(--s48); padding-bottom: var(--s48); }
   .band .inner, .footer .inner { padding-left: var(--s16); padding-right: var(--s16); }
   .h1 { font-size: 40px; line-height: 1.15; }
   .h2 { font-size: 28px; line-height: 1.25; }
   .picture { padding: var(--s24); gap: var(--s16); }
+  .cards .card, .steps .card, .form, .offer { padding: var(--s24); }
+  .statement, .pull { padding-left: var(--s16); }
   .long { display: none; }
   .short { display: inline; }
 }
