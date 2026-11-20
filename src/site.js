@@ -159,7 +159,7 @@ export function homePage({ values = {}, errors = {}, contact = '', legal = {} } 
   <ol class="steps">
     <li class="card"><span class="big">1</span><p>Leave your name, email and one answer. It takes a minute.</p></li>
     <li class="card"><span class="big">2</span><p>We read it and may write to you.</p></li>
-    <li class="card"><span class="big">3</span><p>When there is something to try, we invite you.</p></li>
+    <li class="card"><span class="big">3</span><p>When project1 is ready for the first students, we invite you to try it.</p></li>
   </ol>
 </section>
 

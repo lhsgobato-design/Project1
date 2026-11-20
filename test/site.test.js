@@ -51,6 +51,7 @@ describe('public pages', () => {
     assert.match(html, /understand how grading, classes and schedules work/);
     assert.match(html, /without putting their grades at risk, because project1 is your number one friend\./);
     assert.match(html, /Three steps/);
+    assert.match(html, /When project1 is ready for the first students, we invite you to try it\./);
     assert.match(html, /Why we are doing this/);
     assert.match(html, /Who it is for/);
     assert.equal((html.match(/<details>/g) || []).length, 6, 'six questions');
