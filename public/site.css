@@ -85,6 +85,7 @@ mark { background: var(--accent); color: var(--text); padding: 0 var(--s8); bord
 .card .label { margin: 0 0 var(--s16); }
 .card .h3 { margin-bottom: var(--s16); }
 .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s24); margin-top: var(--s32); }
+.more { margin-top: var(--s32); margin-bottom: 0; }
 .cards .card { padding: var(--s32); min-height: 220px; display: flex; flex-direction: column; justify-content: flex-end; }
 .card-main { background: var(--main); border-color: var(--main); color: var(--bg-light); }
 .card-accent { background: var(--accent); border-color: var(--accent); color: var(--text); }
