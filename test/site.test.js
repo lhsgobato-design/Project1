@@ -146,6 +146,28 @@ describe('privacy information (GDPR Article 13 and Spanish LOPDGDD)', () => {
   });
 });
 
+describe('logo', () => {
+  it('shows the logo in the top bar and the footer, with the name project1 for screen readers', async () => {
+    for (const path of ['/', '/privacy', '/thank-you']) {
+      const html = await (await get(path)).text();
+      assert.equal((html.match(/aria-label="project1"/g) || []).length, 2, `${path}: top bar and footer`);
+      assert.match(html, /<a class="logo logo-light" href="\/" aria-label="project1"><span aria-hidden="true">project<\/span><svg class="turtle"/);
+      assert.match(html, /rel="icon" href="\/assets\/favicon\.svg"/);
+      assert.doesNotMatch(html, /style="/, 'no inline styles (the CSP forbids them)');
+    }
+  });
+
+  it('serves the favicon and the touch icon', async () => {
+    const svg = await get('/assets/favicon.svg');
+    assert.equal(svg.status, 200);
+    assert.match(svg.headers.get('content-type'), /image\/svg\+xml/);
+    assert.match(await svg.text(), /aria-label="project1"/);
+    const png = await get('/assets/apple-touch-icon.png');
+    assert.equal(png.status, 200);
+    assert.equal(png.headers.get('content-type'), 'image/png');
+  });
+});
+
 describe('the form on Home', () => {
   it('shows the Copy page messages next to the fields and keeps what was typed', async () => {
     const res = await join({ name: 'Ana', email: 'nope', answer: 'Exams', website: '' });

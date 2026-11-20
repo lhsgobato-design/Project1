@@ -113,7 +113,7 @@ mark { background: var(--accent); color: var(--text); padding: 0 var(--s8); bord
 .footer .inner { max-width: 1440px; margin: 0 auto; padding: var(--s48) var(--s64); }
 .footer a, .band a:not(.btn) { color: var(--bg-light); }
 .on-dark-soft { color: var(--line); max-width: 46rem; }
-.footer .wordmark { color: var(--bg-light); display: block; margin-bottom: var(--s16); }
+.footer .logo { display: block; margin-bottom: var(--s16); font-size: 32px; }
 /* The offer: a light card on the main band, so the button sits on a light background */
 .offer { max-width: 46rem; color: var(--text); margin-top: var(--s32); padding: var(--s32); }
 .band-main .offer .lead { color: var(--text); }
@@ -171,6 +171,7 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border: 2px solid va
   .picture { padding: var(--s24); gap: var(--s16); }
   .cards .card, .steps .card, .form, .offer { padding: var(--s24); }
   .statement, .pull { padding-left: var(--s16); }
+  .logo { font-size: 32px; }
   .long { display: none; }
   .short { display: inline; }
 }
@@ -179,3 +180,17 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border: 2px solid va
 .summary p { margin: 0; }
 .page ul { margin: 0 0 var(--s16); padding-left: var(--s24); }
 .page li { margin-bottom: var(--s8); }
+
+/* Logo: the word, and the turtle in the place of the 1. Colours from the tokens; see src/logo.js */
+.logo {
+  display: inline-block; margin: 0; white-space: nowrap; text-decoration: none;
+  font: 700 40px/1.15 var(--font-head); color: var(--text);
+  --t-body: var(--main); --t-line: var(--bg-light); --t-centre: var(--accent); --t-digit: var(--text);
+}
+.logo-dark { color: var(--bg-light); --t-body: var(--accent); --t-line: var(--bg-dark); --t-centre: var(--main); --t-digit: var(--bg-light); }
+.logo .turtle { height: 0.975em; width: auto; margin-left: 0.04em; vertical-align: -0.225em; }
+.t-body { fill: var(--t-body); }
+.t-body-stroke { stroke: var(--t-body); }
+.t-centre { fill: var(--t-centre); }
+.t-line { stroke: var(--t-line); }
+.t-digit { fill: var(--t-digit); }

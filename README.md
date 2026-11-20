@@ -36,7 +36,7 @@ Needs Node 22.13 or newer. No other tools: the database is the SQLite built into
 npm install
 cp .env.example .env     # then set ADMIN_EMAIL, ADMIN_PASSWORD (12+ characters) and CONTACT_EMAIL
 npm start                # http://localhost:3000/admin
-npm test                 # 49 tests
+npm test                 # 51 tests
 ```
 
 - The first start creates the admin from `ADMIN_EMAIL` and `ADMIN_PASSWORD`, if there is none yet.
@@ -53,6 +53,15 @@ npm test                 # 49 tests
 - The public pages ask search engines not to index them until `ALLOW_INDEXING=true` (set it at launch, when the text is final).
 - Settings are in `.env.example`. On a real host set `NODE_ENV=production` (Secure cookies), `TRUST_PROXY=1`
   behind a proxy, and point `DATABASE_PATH` at a persistent volume. Without a volume the data is lost on every deploy.
+
+## Logo
+
+The word "project" and a turtle seen from above in the place of the 1; the 1 is in the centre plate of the shell
+(approved by Luis, 2026-11-20). `src/logo.js` draws it for the web pages, using only the Recreo tokens (colours come from CSS
+classes, so the page's CSP needs no inline styles). The pages show it in the top bar and the footer and use `public/favicon.svg`
+and `public/apple-touch-icon.png` as icons. The standalone files are in `brand/logo/` (on light, on dark, on main, on accent and
+the icon). To rebuild the SVG files after a change to the logo: `node scripts/build-logo.js` (the touch icon PNG is a screenshot of
+`public/favicon.svg` at 180 px). The Figma source is the "Logo" component set on the "Design system" page.
 
 ## Privacy
 
@@ -84,6 +93,6 @@ The first-screen designs are on the "Designs" page in the same Figma file.
 
 - Final text. The Home blocks marked Draft or Blocked in the Copy page (problem, benefits, proof, questions, footer and Privacy)
   still need Luis's review, and real student quotes. The Privacy text follows the GDPR and LOPDGDD checklist but has not been read by a lawyer.
-- A logo and a final first-screen picture.
+- A final first-screen picture.
 - Paging of the list (fine for a waiting list, revisit past a few hundred enquiries).
 - More than one admin, roles, and syncing with the Notion CRM.
