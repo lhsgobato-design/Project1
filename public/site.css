@@ -174,3 +174,8 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border: 2px solid va
   .long { display: none; }
   .short { display: inline; }
 }
+
+/* Short data protection text next to the form, and lists on the Privacy page */
+.summary p { margin: 0; }
+.page ul { margin: 0 0 var(--s16); padding-left: var(--s24); }
+.page li { margin-bottom: var(--s8); }

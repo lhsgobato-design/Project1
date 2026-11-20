@@ -36,7 +36,7 @@ Needs Node 22.13 or newer. No other tools: the database is the SQLite built into
 npm install
 cp .env.example .env     # then set ADMIN_EMAIL, ADMIN_PASSWORD (12+ characters) and CONTACT_EMAIL
 npm start                # http://localhost:3000/admin
-npm test                 # 45 tests
+npm test                 # 49 tests
 ```
 
 - The first start creates the admin from `ADMIN_EMAIL` and `ADMIN_PASSWORD`, if there is none yet.
@@ -47,9 +47,21 @@ npm test                 # 45 tests
   It refuses to run when `NODE_ENV=production`.
 - Home is at `http://localhost:3000/`. `CONTACT_EMAIL` shows in the footer and on the Privacy page; until it is set they show
   "[contact email to be added]".
+- The Privacy page and the short data protection text next to the form need `CONTROLLER_NAME`, `CONTROLLER_ADDRESS`,
+  `CONTROLLER_TAX_ID` (optional) and `RETENTION_PERIOD` (for example "12 months after your last message"). Until they are set the
+  pages show "[... to be added]" placeholders, so fill them in before launch.
 - The public pages ask search engines not to index them until `ALLOW_INDEXING=true` (set it at launch, when the text is final).
 - Settings are in `.env.example`. On a real host set `NODE_ENV=production` (Secure cookies), `TRUST_PROXY=1`
   behind a proxy, and point `DATABASE_PATH` at a persistent volume. Without a volume the data is lost on every deploy.
+
+## Privacy
+
+The Privacy page covers what GDPR Article 13 and the Spanish LOPDGDD ask for when data is collected through a form: who is
+responsible, what is collected, why and on what basis (consent), who receives it (Railway, Resend, the email provider), the move
+outside the EU, how long it is kept, the rights, the complaint route to the AEPD, and the minimum age of 14. The short first layer sits next
+to the form. The public pages set no cookies and load nothing from other servers: the fonts are in `public/fonts` (SIL Open Font
+License, licences included). This is a checklist-level review, not legal advice: have a Spanish data protection adviser read the
+final text, and check each provider's data processing terms.
 
 ## Security notes
 
@@ -71,7 +83,7 @@ The first-screen designs are on the "Designs" page in the same Figma file.
 ## Not in this version
 
 - Final text. The Home blocks marked Draft or Blocked in the Copy page (problem, benefits, proof, questions, footer and Privacy)
-  still need Luis's review, and real student quotes. The Privacy text has not been checked against Spanish and EU data rules.
+  still need Luis's review, and real student quotes. The Privacy text follows the GDPR and LOPDGDD checklist but has not been read by a lawyer.
 - A logo and a final first-screen picture.
 - Paging of the list (fine for a waiting list, revisit past a few hundred enquiries).
 - More than one admin, roles, and syncing with the Notion CRM.

@@ -10,6 +10,11 @@ export function loadConfig(env = process.env) {
     allowedOrigin: env.ALLOWED_ORIGIN || '',
     allowIndexing: env.ALLOW_INDEXING === 'true',
     contactEmail: (env.CONTACT_EMAIL || '').trim(),
+    // Who is responsible for the data (shown on the Privacy page and next to the form).
+    controllerName: (env.CONTROLLER_NAME || '').trim(),
+    controllerAddress: (env.CONTROLLER_ADDRESS || '').trim(),
+    controllerTaxId: (env.CONTROLLER_TAX_ID || '').trim(),
+    retention: (env.RETENTION_PERIOD || '').trim(),
     publicUrl: (env.PUBLIC_URL || '').trim(),
     notifyEmail: (env.NOTIFY_EMAIL || '').trim(),
     mailFrom: (env.MAIL_FROM || '').trim(),

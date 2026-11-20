@@ -14,7 +14,7 @@ const FAQ = [
   ['Does joining cost anything?', 'No. This website takes no payments.'],
   ['What will it cost later?', 'We have not set a price yet.'],
   ['What happens after I join?', 'We read your answer and may write to you.'],
-  ['Who sees my details?', 'Only the founder of project1 can open the list.'],
+  ['Who sees my details?', 'Only the founder of project1 reads them. They are stored and sent by service providers, which the Privacy page names.'],
   ['Can I ask you to delete my details?', 'Yes. Write to us and we delete them.'],
 ];
 
@@ -22,6 +22,16 @@ function contactLink(email) {
   return email
     ? `<a href="mailto:${esc(email)}">${esc(email)}</a>`
     : '<span>[contact email to be added]</span>';
+}
+
+const todo = (label) => `<span>[${label} to be added]</span>`;
+const legalValue = (value, label) => (value ? esc(value) : todo(label));
+
+// The short first layer of the data protection information, shown next to the form (the full text is on the Privacy page).
+function formSummary({ contact, legal }) {
+  return `<div class="small soft summary">
+        <p><strong>Data protection.</strong> Responsible: ${legalValue(legal.name, 'name of the person or company responsible')}. Purpose: to contact you about project1. Basis: your consent. You must be 14 or older. You can ask us to see, correct or delete your details, or take back your consent, at ${contactLink(contact)}. <a href="/privacy">Read the full Privacy page.</a></p>
+      </div>`;
 }
 
 function layout({ title, description = DESCRIPTION, body, noindex = false }) {
@@ -33,9 +43,7 @@ function layout({ title, description = DESCRIPTION, body, noindex = false }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 ${noindex ? '<meta name="robots" content="noindex">' : ''}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=DM+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/tokens.css">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
@@ -60,7 +68,7 @@ function footer(contact) {
   <div class="inner">
     <p class="wordmark">project1</p>
     <p>Contact: ${contactLink(contact)}</p>
-    <p class="small on-dark-soft">We use your name, email and answer to contact you about project1. Only the founder can see them, and you can ask us to delete them at any time.</p>
+    <p class="small on-dark-soft">We use your name, email and answer to contact you about project1. Only the founder reads them, and you can ask us to delete them at any time.</p>
     <p><a href="/privacy">Privacy</a></p>
   </div>
 </footer>`;
@@ -70,7 +78,7 @@ function fieldError(errors, key) {
   return errors[key] ? `<p class="error" id="${key}-error" role="alert">${esc(errors[key])}</p>` : '';
 }
 
-function joinForm({ values, errors }) {
+function joinForm({ values, errors, contact, legal }) {
   // After a failed send, focus (and so scroll to) the first field that needs fixing.
   const first = ['name', 'email', 'answer', 'consent'].find((key) => errors[key]);
   const invalid = (key) =>
@@ -99,11 +107,12 @@ function joinForm({ values, errors }) {
       ${fieldError(errors, 'consent')}
     </div>
     <div class="hp" aria-hidden="true"><label>Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    ${formSummary({ contact, legal })}
     <button class="btn" type="submit">Join the waiting list</button>
   </form>`;
 }
 
-export function homePage({ values = {}, errors = {}, contact = '' } = {}) {
+export function homePage({ values = {}, errors = {}, contact = '', legal = {} } = {}) {
   const hasErrors = Object.keys(errors).length > 0;
   return layout({
     title: 'project1: join the waiting list',
@@ -194,7 +203,7 @@ export function homePage({ values = {}, errors = {}, contact = '' } = {}) {
     <p class="lead">Join the waiting list. It takes a minute.</p>
     ${hasErrors ? '<p class="notice" role="alert">Something is missing. Nothing you typed is lost.</p>' : ''}
   </div>
-  ${joinForm({ values, errors })}
+  ${joinForm({ values, errors, contact, legal })}
 </section>
 </main>
 ${footer(contact)}`,
@@ -215,20 +224,49 @@ ${footer(contact)}`,
   });
 }
 
-export function privacyPage({ contact = '' } = {}) {
+export function privacyPage({ contact = '', legal = {} } = {}) {
   return layout({
     title: 'Privacy · project1',
     body: `${topBar({ withButton: false })}
 <main class="page">
   <h1 class="h1">Privacy</h1>
+  <p class="lead">This page says what we do with your details, in plain words. It follows the EU data protection rules (GDPR) and the Spanish law that goes with them.</p>
+
+  <h2 class="h3">Who is responsible</h2>
+  <p>${legalValue(legal.name, 'name of the person or company responsible')}.<br>
+  Address: ${legalValue(legal.address, 'address')}.<br>
+  ${legal.taxId ? `Tax ID: ${esc(legal.taxId)}.<br>` : ''}Contact: ${contactLink(contact)}.</p>
+
   <h2 class="h3">What we collect</h2>
-  <p>Your name, your email and your answer to one question, and your agreement to be contacted.</p>
-  <h2 class="h3">Why</h2>
-  <p>To contact you about project1 and to learn what students find hardest.</p>
+  <p>Your name, your email, your answer to one question (optional), and your agreement to be contacted. We do not use cookies or tracking tools, and this website loads nothing from other companies' servers.</p>
+
+  <h2 class="h3">Why we use it, and on what basis</h2>
+  <p>To contact you about project1 and to learn what students find hardest. We use your details only because you agree to it by ticking the box. You can take back your agreement at any time by writing to us. Doing so does not change what we did before.</p>
+
+  <h2 class="h3">Do you have to give it?</h2>
+  <p>You need to give your name and email to join the waiting list, because without them we cannot write to you. The answer is optional. You must be 14 or older to join. If you are younger, ask a parent or guardian to write to us.</p>
+
   <h2 class="h3">Who sees it</h2>
-  <p>Only the founder of project1.</p>
-  <h2 class="h3">How to ask for deletion</h2>
-  <p>Write to ${contactLink(contact)} and we delete your details.</p>
+  <p>Only the founder of project1 reads your details. They are stored and sent by service providers that work for us:</p>
+  <ul>
+    <li>Railway, which hosts the website and keeps the list. Its servers are in the United States.</li>
+    <li>Resend, which sends the founder an email each time someone joins. It is a company in the United States.</li>
+    <li>Our email provider, which receives that email.</li>
+  </ul>
+  <p>We do not sell your details, and we do not use them for automatic decisions or profiling.</p>
+
+  <h2 class="h3">Moving details outside the EU</h2>
+  <p>Because these providers are in the United States, your details can be sent outside the EU. For that we rely on the safeguards the EU allows, such as standard contractual clauses.</p>
+
+  <h2 class="h3">How long we keep it</h2>
+  <p>${legalValue(legal.retention, 'how long we keep your details')}. After that we delete them.</p>
+
+  <h2 class="h3">Your rights</h2>
+  <p>You can ask us to show you your details, correct them, delete them, limit how we use them, stop using them, or give them to you in a file you can reuse. You can also take back your agreement. Write to ${contactLink(contact)}. We answer within one month, and we may ask you to prove who you are.</p>
+
+  <h2 class="h3">If you are not happy</h2>
+  <p>You can complain to the Spanish data protection authority, the Agencia Española de Protección de Datos, at <a href="https://www.aepd.es">www.aepd.es</a>.</p>
+
   <p><a class="btn btn-second" href="/">Back to home</a></p>
 </main>
 ${footer(contact)}`,
