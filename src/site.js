@@ -4,7 +4,7 @@ import { esc } from './views.js';
 // Each block is marked there as Ready, Draft or Blocked. Change the text there first.
 
 const LINE =
-  'project1 is being built to help students who came from abroad to study at a university in Barcelona understand how grading, classes and schedules work. Join the waiting list and tell us what is hardest.';
+  'project1 is being built to help students who came from abroad to study at a university in Barcelona understand how grading, classes and schedules work. Join the waiting list and tell us your doubt.';
 const DESCRIPTION =
   'project1 is being built to help students who came from abroad to study in Barcelona understand how grading, classes and schedules work. Join the waiting list.';
 const QUESTIONS = ['How does grading work?', 'What if I fail?', 'How do I enrol?', 'How do I study here?'];
@@ -199,7 +199,7 @@ export function homePage({ values = {}, errors = {}, contact = '', legal = {} } 
 <section class="section split" id="join">
   <div>
     <p class="kicker"><span class="tag">Join</span></p>
-    <h2 class="h2">Tell us what is hardest.</h2>
+    <h2 class="h2">Tell us your doubt.</h2>
     <p class="lead">Join the waiting list. It takes a minute.</p>
     ${hasErrors ? '<p class="notice" role="alert">Something is missing. Nothing you typed is lost.</p>' : ''}
   </div>
