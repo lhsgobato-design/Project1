@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="project1">
+<rect width="256" height="256" rx="56" fill="#FBF8F2"/>
+<g transform="translate(50 24) scale(0.92)">
+<defs><clipPath id="shell-icon"><ellipse cx="120" cy="128" rx="72" ry="82"/></clipPath></defs>
+<g transform="translate(-35 -16)">
+<circle cx="120" cy="38" r="22" fill="#4B3FD6"/>
+<circle cx="52" cy="72" r="17" fill="#4B3FD6"/><circle cx="188" cy="72" r="17" fill="#4B3FD6"/>
+<circle cx="52" cy="186" r="17" fill="#4B3FD6"/><circle cx="188" cy="186" r="17" fill="#4B3FD6"/>
+<path d="M108 206L120 240L132 206Z" fill="#4B3FD6" stroke="#4B3FD6" stroke-width="4" stroke-linejoin="round"/>
+<ellipse cx="120" cy="128" rx="72" ry="82" fill="#4B3FD6"/>
+
+<polygon points="120.0,82.0 80.2,105.0 80.2,151.0 120.0,174.0 159.8,151.0 159.8,105.0" fill="#C6F04D"/>
+<path transform="translate(108.45 153.08) scale(1.52)" d="M6.4 0V-22.6H1.55V-28.9Q3.9 -28.9 5.43 -29.73Q6.95 -30.55 7.4 -33H13.65V0Z" fill="#1A1833"/>
+</g>
+</g>
+</svg>

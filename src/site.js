@@ -1,4 +1,5 @@
 import { esc } from './views.js';
+import { logoHtml } from './logo.js';
 
 // The text on these pages is the draft in the Copy page in project1 HQ.
 // Each block is marked there as Ready, Draft or Blocked. Change the text there first.
@@ -43,6 +44,8 @@ function layout({ title, description = DESCRIPTION, body, noindex = false }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 ${noindex ? '<meta name="robots" content="noindex">' : ''}
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/tokens.css">
 <link rel="stylesheet" href="/assets/site.css">
@@ -58,7 +61,7 @@ const joinButton = (extra = '') =>
 
 function topBar({ withButton }) {
   return `<header class="bar">
-  <a class="wordmark" href="/">project1</a>
+  ${logoHtml({ id: 'top' })}
   ${withButton ? joinButton() : ''}
 </header>`;
 }
@@ -66,7 +69,7 @@ function topBar({ withButton }) {
 function footer(contact) {
   return `<footer class="footer">
   <div class="inner">
-    <p class="wordmark">project1</p>
+    ${logoHtml({ id: 'foot', tone: 'dark', tag: 'p' })}
     <p>Contact: ${contactLink(contact)}</p>
     <p class="small on-dark-soft">We use your name, email and answer to contact you about project1. Only the founder reads them, and you can ask us to delete them at any time.</p>
     <p><a href="/privacy">Privacy</a></p>
