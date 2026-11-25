@@ -1,6 +1,6 @@
 import { createApp, bootstrapAdmin } from './app.js';
 import { loadConfig } from './config.js';
-import { openDb } from './db.js';
+import { openDb, openReadOnlyDb } from './db.js';
 import { createNotifier, notifierMode } from './notify.js';
 
 const config = loadConfig();
@@ -23,11 +23,19 @@ console.log(
     : 'Email on each new enquiry: off (set NOTIFY_EMAIL and RESEND_API_KEY, or SMTP_URL).',
 );
 
-const app = createApp({ db, config, notifier });
+// Second, read-only connection for the agent API (SQLite refuses writes on it).
+const readDb = config.databasePath === ':memory:' ? null : openReadOnlyDb(config.databasePath);
+console.log(
+  readDb && config.agentReadTokenHash
+    ? 'Agent API (read-only): on.'
+    : 'Agent API (read-only): off (set AGENT_READ_TOKEN_SHA256).',
+);
+
+const app = createApp({ db, readDb, config, notifier });
 const server = app.listen(config.port, () => {
   console.log(`project1 admin listening on port ${config.port}`);
 });
 
 for (const signal of ['SIGINT', 'SIGTERM']) {
-  process.on(signal, () => server.close(() => { db.close(); process.exit(0); }));
+  process.on(signal, () => server.close(() => { readDb?.close(); db.close(); process.exit(0); }));
 }

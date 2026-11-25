@@ -24,5 +24,8 @@ export function loadConfig(env = process.env) {
     adminEmail: (env.ADMIN_EMAIL || '').trim(),
     adminPassword: env.ADMIN_PASSWORD || '',
     adminReset: env.ADMIN_RESET === 'true',
+    // Read-only API for the AI agent. Only the SHA-256 of the agent's key is stored here,
+    // never the key itself. Empty = the agent API is off (every /api/agent path answers 404).
+    agentReadTokenHash: (env.AGENT_READ_TOKEN_SHA256 || '').trim().toLowerCase(),
   };
 }

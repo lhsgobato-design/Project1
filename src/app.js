@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
-import { STATUSES, makeRepo } from './db.js';
+import { STATUSES, makeAgentRepo, makeRepo } from './db.js';
 import {
   MIN_PASSWORD_LENGTH, createLimiter, dummyHash, hashPassword, randomToken, safeEqual, sha256, verifyPassword,
 } from './security.js';
@@ -37,7 +37,8 @@ export async function bootstrapAdmin(db, config) {
   return exists ? 'reset' : 'created';
 }
 
-export function createApp({ db, config, notifier = null }) {
+// readDb: a read-only connection (openReadOnlyDb). The agent API only ever uses this one.
+export function createApp({ db, readDb = null, config, notifier = null }) {
   const repo = makeRepo(db);
   const app = express();
   // Sends the email for a new enquiry. Never slows down or breaks the form.
@@ -120,6 +121,50 @@ export function createApp({ db, config, notifier = null }) {
     // Same answer whether the email is new or not, so nobody can test which emails are on the list.
     return res.status(201).json({ ok: true });
   });
+
+  // ---------- Read-only API for the AI agent ----------
+  // Its own key (Authorization: Bearer <key>), separate from the admin password. Only GET,
+  // only over the read-only connection, never the admins or sessions tables.
+  // Off (404) until AGENT_READ_TOKEN_SHA256 is set.
+  const agentEnabled = Boolean(readDb && /^[0-9a-f]{64}$/.test(config.agentReadTokenHash));
+  const agentRepo = agentEnabled ? makeAgentRepo(readDb) : null;
+  const agentLimiter = createLimiter({ max: 20, windowMs: 15 * 60 * 1000 });
+  const agent = express.Router();
+
+  agent.use((req, res, next) => {
+    if (!agentEnabled) return res.status(404).json({ ok: false, error: 'Not found.' });
+    res.set({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow', 'X-Content-Type-Options': 'nosniff' });
+    const header = String(req.headers.authorization || '');
+    const token = header.startsWith('Bearer ') ? header.slice(7).trim() : '';
+    if (token && safeEqual(sha256(token), config.agentReadTokenHash)) return next();
+    // Count only failed tries, so a wrong or stolen-and-guessed key is slowed down.
+    if (!agentLimiter.take(req.ip)) return res.status(429).json({ ok: false, error: 'Too many tries. Please try again later.' });
+    res.set('WWW-Authenticate', 'Bearer');
+    return res.status(401).json({ ok: false, error: 'Unauthorized.' });
+  });
+
+  agent.get('/summary', (req, res) => {
+    res.json({ ok: true, counts: agentRepo.counts(), latest: agentRepo.list({ limit: 5 }) });
+  });
+
+  agent.get('/enquiries', (req, res) => {
+    const status = String(req.query.status ?? '');
+    const since = String(req.query.since ?? '');
+    const limit = Number(req.query.limit ?? 100);
+    if (status && !STATUSES.includes(status)) return res.status(422).json({ ok: false, error: `status must be one of: ${STATUSES.join(', ')}` });
+    if (since && !/^\d{4}-\d{2}-\d{2}(T[\d:.]+Z?)?$/.test(since)) return res.status(422).json({ ok: false, error: 'since must be a date like 2026-11-25' });
+    if (!Number.isInteger(limit) || limit < 1 || limit > 500) return res.status(422).json({ ok: false, error: 'limit must be 1 to 500' });
+    return res.json({ ok: true, enquiries: agentRepo.list({ status, since, limit }) });
+  });
+
+  agent.get('/enquiries/:id', (req, res) => {
+    const found = /^\d+$/.test(req.params.id) && agentRepo.get(Number(req.params.id));
+    if (!found) return res.status(404).json({ ok: false, error: 'Not found.' });
+    return res.json({ ok: true, ...found });
+  });
+
+  agent.use((req, res) => res.status(404).json({ ok: false, error: 'Not found.' }));
+  app.use('/api/agent', agent);
 
   app.use('/api', (err, req, res, next) => {
     if (res.headersSent) return next(err);

@@ -58,6 +58,54 @@ export function openDb(file) {
   return db;
 }
 
+// A second connection to the same file that can only read: SQLite refuses every write on it.
+// Open it after openDb, so the file and its tables already exist.
+export function openReadOnlyDb(file) {
+  const db = new DatabaseSync(file, { readOnly: true });
+  db.exec('PRAGMA query_only = ON;');
+  return db;
+}
+
+// Read-only queries for the AI agent. Never touches the admins or sessions tables.
+export function makeAgentRepo(db) {
+  const q = {
+    list: db.prepare(
+      `SELECT e.id, e.name, e.email, e.answer, e.status, e.created_at,
+              (SELECT COUNT(*) FROM notes n WHERE n.enquiry_id = e.id) AS note_count,
+              (SELECT n.body FROM notes n WHERE n.enquiry_id = e.id ORDER BY n.id DESC LIMIT 1) AS last_note
+         FROM enquiries e
+        WHERE (? = '' OR e.status = ?)
+          AND (? = '' OR e.created_at >= ?)
+        ORDER BY e.created_at DESC, e.id DESC
+        LIMIT ?`,
+    ),
+    counts: db.prepare('SELECT status, COUNT(*) AS n FROM enquiries GROUP BY status'),
+    one: db.prepare('SELECT id, name, email, answer, status, consent_at, created_at FROM enquiries WHERE id = ?'),
+    notes: db.prepare('SELECT id, body, created_at FROM notes WHERE enquiry_id = ? ORDER BY id DESC'),
+  };
+  const num = (row) => row && { ...row, id: Number(row.id), ...(row.note_count !== undefined ? { note_count: Number(row.note_count) } : {}) };
+
+  return {
+    list({ status = '', since = '', limit = 100 } = {}) {
+      const s = STATUSES.includes(status) ? status : '';
+      return q.list.all(s, s, since, since, limit).map(num);
+    },
+    counts() {
+      const byStatus = Object.fromEntries(STATUSES.map((s) => [s, 0]));
+      let total = 0;
+      for (const row of q.counts.all()) {
+        byStatus[row.status] = Number(row.n);
+        total += Number(row.n);
+      }
+      return { byStatus, total };
+    },
+    get(id) {
+      const enquiry = q.one.get(id);
+      return enquiry ? { enquiry: num(enquiry), notes: q.notes.all(id).map(num) } : null;
+    },
+  };
+}
+
 export const emailKey = (email) => String(email).trim().toLowerCase();
 
 const escapeLike = (s) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
