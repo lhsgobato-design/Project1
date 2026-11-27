@@ -1,4 +1,5 @@
 import { STATUSES, STATUS_MEANING } from './db.js';
+import { ACCEPTANCE_SUBJECT, acceptanceText } from './notify.js';
 
 export const esc = (value) =>
   String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -18,7 +19,45 @@ const MESSAGES = {
   status: 'Status saved.',
   note: 'Note added.',
   deleted: 'Enquiry deleted.',
+  accepted: 'Acceptance email sent.',
+  'accept-failed': 'The acceptance email could not be sent. Nothing was recorded, so you can try again later.',
+  'accept-off': 'Sending to students is not set up yet, so nothing was sent.',
+  'accept-already': 'The acceptance email was already sent to this student.',
+  'accept-not-pilot': 'Set the status to Pilot first. Nothing was sent.',
 };
+const ALERTS = new Set(['accept-failed', 'accept-off', 'accept-already', 'accept-not-pilot']);
+const messageHtml = (message) =>
+  message && MESSAGES[message]
+    ? `<p class="${ALERTS.has(message) ? 'alert' : 'notice'}" role="${ALERTS.has(message) ? 'alert' : 'status'}">${esc(MESSAGES[message])}</p>`
+    : '';
+
+// The acceptance email card on an enquiry: what was sent, or a button to send it, with the exact text.
+function acceptanceCard({ session, enquiry, acceptance }) {
+  const preview = `<details class="meanings">
+      <summary class="label">See the email</summary>
+      <p class="small"><strong>Subject:</strong> ${esc(ACCEPTANCE_SUBJECT)}</p>
+      <p class="answer small">${esc(acceptanceText(enquiry.name))}</p>
+    </details>`;
+  let state;
+  if (enquiry.accepted_email_at) {
+    state = `<p>Sent on ${esc(fmtDateTime(enquiry.accepted_email_at))} to <span class="break">${esc(enquiry.email)}</span>.</p>`;
+  } else if (enquiry.status !== 'Pilot') {
+    state = `<p class="soft">Set the status to ${statusTag('Pilot')} to invite this student to try project1. You can then send them this email.</p>`;
+  } else if (!acceptance?.enabled) {
+    state = `<p class="alert">${esc(acceptance?.reason || 'Sending to students is off.')}</p>`;
+  } else {
+    state = `<form method="post" action="/admin/enquiries/${enquiry.id}/accept-email" class="stack">
+      <input type="hidden" name="_csrf" value="${esc(session.csrf)}">
+      <p>Send it to <span class="break">${esc(enquiry.email)}</span>. It can only be sent once.</p>
+      <button class="btn" type="submit">Send acceptance email</button>
+    </form>`;
+  }
+  return `<section class="card wide">
+    <h2 class="h3">Acceptance email</h2>
+    ${state}
+    ${preview}
+  </section>`;
+}
 
 export const statusTag = (status) => `<span class="tag tag-${slug(status)}">${esc(status)}</span>`;
 
@@ -115,7 +154,7 @@ export function listPage({ session, rows, counts, query, status, message }) {
     title: 'Enquiries',
     csrf: session.csrf,
     body: `<h1 class="h2">Enquiries</h1>
-${message ? `<p class="notice" role="status">${esc(MESSAGES[message] || '')}</p>` : ''}
+${messageHtml(message)}
 <div class="counts" aria-label="Enquiries per status">${tiles}</div>
 <form class="filters" method="get" action="/admin/enquiries">
   <div class="field grow">
@@ -137,7 +176,7 @@ ${body}`,
   });
 }
 
-export function detailPage({ session, enquiry, notes, message, noteError }) {
+export function detailPage({ session, enquiry, notes, message, noteError, acceptance }) {
   const meanings = STATUSES.map(
     (s) => `<li>${statusTag(s)} <span>${esc(STATUS_MEANING[s])}</span></li>`,
   ).join('');
@@ -148,7 +187,7 @@ export function detailPage({ session, enquiry, notes, message, noteError }) {
     csrf: session.csrf,
     body: `<p><a class="back" href="/admin/enquiries">← All enquiries</a></p>
 <h1 class="h2 break">${esc(enquiry.name)}</h1>
-${message ? `<p class="notice" role="status">${esc(MESSAGES[message] || '')}</p>` : ''}
+${messageHtml(message)}
 <div class="detail">
   <section class="card">
     <p class="label soft">Contact</p>
@@ -174,6 +213,8 @@ ${message ? `<p class="notice" role="status">${esc(MESSAGES[message] || '')}</p>
       <ul>${meanings}</ul>
     </details>
   </section>
+
+  ${acceptanceCard({ session, enquiry, acceptance })}
 
   <section class="card wide">
     <h2 class="h3">Notes</h2>

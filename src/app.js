@@ -38,7 +38,8 @@ export async function bootstrapAdmin(db, config) {
 }
 
 // readDb: a read-only connection (openReadOnlyDb). The agent API only ever uses this one.
-export function createApp({ db, readDb = null, config, notifier = null }) {
+export function createApp({ db, readDb = null, config, notifier = null, acceptanceMailer = null }) {
+  const acceptance = acceptanceMailer ?? { enabled: false, reason: 'Sending to students is off.' };
   const repo = makeRepo(db);
   const app = express();
   // Sends the email for a new enquiry. Never slows down or breaks the form.
@@ -279,11 +280,40 @@ export function createApp({ db, readDb = null, config, notifier = null }) {
     const id = idOf(req);
     const found = id && repo.get(id);
     if (!found) return res.status(404).send(notFoundPage(req.session));
-    return res.status(extra.noteError ? 422 : 200).send(detailPage({ session: req.session, ...found, ...extra }));
+    return res.status(extra.noteError ? 422 : 200).send(detailPage({
+      session: req.session, ...found, ...extra, acceptance: { enabled: acceptance.enabled, reason: acceptance.reason },
+    }));
   };
 
+  const DETAIL_MESSAGES = ['status', 'note', 'accepted', 'accept-failed', 'accept-off', 'accept-already', 'accept-not-pilot'];
   admin.get('/enquiries/:id', requireAuth, (req, res) => {
-    showDetail(req, res, { message: ['status', 'note'].includes(req.query.msg) ? req.query.msg : '' });
+    showDetail(req, res, { message: DETAIL_MESSAGES.includes(req.query.msg) ? req.query.msg : '' });
+  });
+
+  // The acceptance email: only for an enquiry in Pilot, only once, only when sending is set up.
+  admin.post('/enquiries/:id/accept-email', requireAuth, requireCsrf, async (req, res, next) => {
+    try {
+      const id = idOf(req);
+      const found = id && repo.get(id);
+      if (!found) return res.status(404).send(notFoundPage(req.session));
+      const back = (msg) => res.redirect(303, `/admin/enquiries/${id}?msg=${msg}`);
+      if (found.enquiry.status !== 'Pilot') return back('accept-not-pilot');
+      if (!acceptance.enabled) return back('accept-off');
+      const claimed = repo.claimAcceptance(id);
+      if (!claimed) return back('accept-already');
+      try {
+        await acceptance.send({ name: found.enquiry.name, email: found.enquiry.email });
+      } catch (error) {
+        repo.releaseAcceptance(id, claimed);
+        console.error(`Acceptance email failed for enquiry ${id}:`, error.code || error.message);
+        return back('accept-failed');
+      }
+      repo.addNote(id, 'Acceptance email sent.');
+      console.log(`Acceptance email sent for enquiry ${id}.`);
+      return back('accepted');
+    } catch (error) {
+      return next(error);
+    }
   });
 
   admin.post('/enquiries/:id/status', requireAuth, requireCsrf, (req, res) => {

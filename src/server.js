@@ -1,7 +1,7 @@
 import { createApp, bootstrapAdmin } from './app.js';
 import { loadConfig } from './config.js';
 import { openDb, openReadOnlyDb } from './db.js';
-import { createNotifier, notifierMode } from './notify.js';
+import { createAcceptanceMailer, createNotifier, notifierMode } from './notify.js';
 
 const config = loadConfig();
 const db = openDb(config.databasePath);
@@ -31,7 +31,12 @@ console.log(
     : 'Agent API (read-only): off (set AGENT_READ_TOKEN_SHA256).',
 );
 
-const app = createApp({ db, readDb, config, notifier });
+const acceptanceMailer = createAcceptanceMailer({
+  from: config.mailFrom, replyTo: config.contactEmail || config.notifyEmail, smtpUrl: config.smtpUrl, resendApiKey: config.resendApiKey,
+});
+console.log(acceptanceMailer.enabled ? `Acceptance email to students: on (from ${config.mailFrom}).` : `Acceptance email to students: off. ${acceptanceMailer.reason}`);
+
+const app = createApp({ db, readDb, config, notifier, acceptanceMailer });
 const server = app.listen(config.port, () => {
   console.log(`project1 admin listening on port ${config.port}`);
 });

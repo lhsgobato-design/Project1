@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS enquiries (
   answer TEXT NOT NULL DEFAULT '',
   consent_at TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'Lead' CHECK (status IN (${statusList})),
-  created_at TEXT NOT NULL
+  created_at TEXT NOT NULL,
+  accepted_email_at TEXT
 );
 CREATE INDEX IF NOT EXISTS enquiries_created ON enquiries (created_at DESC);
 CREATE TABLE IF NOT EXISTS notes (
@@ -55,6 +56,9 @@ export function openDb(file) {
   db.exec('PRAGMA foreign_keys = ON;');
   if (file !== ':memory:') db.exec('PRAGMA journal_mode = WAL;');
   db.exec(SCHEMA);
+  // Databases made before the acceptance email get its column added once.
+  const columns = db.prepare('PRAGMA table_info(enquiries)').all().map((c) => c.name);
+  if (!columns.includes('accepted_email_at')) db.exec('ALTER TABLE enquiries ADD COLUMN accepted_email_at TEXT');
   return db;
 }
 
@@ -133,6 +137,8 @@ export function makeRepo(db) {
     setStatus: db.prepare('UPDATE enquiries SET status = ? WHERE id = ?'),
     addNote: db.prepare('INSERT INTO notes (enquiry_id, body, created_at) VALUES (?, ?, ?)'),
     remove: db.prepare('DELETE FROM enquiries WHERE id = ?'),
+    claimAcceptance: db.prepare('UPDATE enquiries SET accepted_email_at = ? WHERE id = ? AND accepted_email_at IS NULL'),
+    releaseAcceptance: db.prepare('UPDATE enquiries SET accepted_email_at = NULL WHERE id = ? AND accepted_email_at = ?'),
     adminCount: db.prepare('SELECT COUNT(*) AS n FROM admins'),
     adminByKey: db.prepare('SELECT * FROM admins WHERE email_key = ?'),
     adminDeleteAll: db.prepare('DELETE FROM admins'),
@@ -185,6 +191,16 @@ export function makeRepo(db) {
     },
     remove(id) {
       return q.remove.run(id).changes > 0;
+    },
+    // The acceptance email: mark it sent before sending, so two clicks can never send it twice.
+    // Returns the timestamp it claimed, or null if it was already sent.
+    claimAcceptance(id) {
+      const at = new Date().toISOString();
+      return q.claimAcceptance.run(at, id).changes > 0 ? at : null;
+    },
+    // Undo the claim when sending failed, so it can be tried again.
+    releaseAcceptance(id, at) {
+      q.releaseAcceptance.run(id, at);
     },
     // Admin and sessions
     hasAdmin: () => Number(q.adminCount.get().n) > 0,
