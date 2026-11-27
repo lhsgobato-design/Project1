@@ -127,12 +127,25 @@ describe('QR code to the form', () => {
     assert.ok(html.includes(qrSvg('https://project1.example/#join', { label })));
   });
 
-  it('draws a valid SVG with a light background and a quiet zone', () => {
+  it('draws dark-on-light at a fixed size even without the stylesheet', () => {
     const svg = qrSvg('https://project1.example/#join');
     const [, size] = /viewBox="0 0 (\d+) \1"/.exec(svg);
     assert.ok(Number(size) >= 21 + 8, 'at least version 1 plus a 4-module quiet zone on each side');
+    assert.match(svg, /<svg class="qr-code" width="144" height="144"/);
     assert.match(svg, /<rect width="\d+" height="\d+" fill="#FBF8F2"\/>/);
-    assert.match(svg, /<path fill="currentColor" d="M\d/);
+    assert.match(svg, /<path fill="#1A1833" d="M\d/, 'colour is in the SVG, not inherited from the footer');
+    assert.doesNotMatch(svg, /currentColor/);
+  });
+});
+
+describe('stylesheets', () => {
+  it('carry a version tag from their contents, so a deploy is never shown with an old cached stylesheet', async () => {
+    const html = await (await get('/')).text();
+    for (const file of ['fonts.css', 'tokens.css', 'site.css']) {
+      const m = new RegExp(`href="(/assets/${file.replace('.', '\\.')}\\?v=[0-9a-f]{10})"`).exec(html);
+      assert.ok(m, `${file} has a version tag`);
+      assert.equal((await get(m[1])).status, 200, `${m[1]} is served`);
+    }
   });
 });
 

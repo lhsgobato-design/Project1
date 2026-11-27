@@ -1,6 +1,22 @@
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { esc } from './views.js';
 import { logoHtml } from './logo.js';
 import { qrSvg } from './qr.js';
+
+// Version tag for each stylesheet, from its contents. Browsers keep /assets files for an hour,
+// so without it a visitor could see new HTML with an old stylesheet after a deploy.
+const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
+const assetVersion = (file) => {
+  try {
+    return crypto.createHash('sha256').update(fs.readFileSync(path.join(publicDir, file))).digest('hex').slice(0, 10);
+  } catch {
+    return '0';
+  }
+};
+const CSS = ['fonts.css', 'tokens.css', 'site.css'].map((file) => `/assets/${file}?v=${assetVersion(file)}`);
 
 // The text on these pages is the draft in the Copy page in project1 HQ.
 // Each block is marked there as Ready, Draft or Blocked. Change the text there first.
@@ -47,9 +63,7 @@ function layout({ title, description = DESCRIPTION, body, noindex = false }) {
 ${noindex ? '<meta name="robots" content="noindex">' : ''}
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="/assets/fonts.css">
-<link rel="stylesheet" href="/assets/tokens.css">
-<link rel="stylesheet" href="/assets/site.css">
+${CSS.map((href) => `<link rel="stylesheet" href="${href}">`).join('\n')}
 </head>
 <body>
 ${body}
