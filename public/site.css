@@ -114,6 +114,13 @@ mark { background: var(--accent); color: var(--text); padding: 0 var(--s8); bord
 .footer a, .band a:not(.btn) { color: var(--bg-light); }
 .on-dark-soft { color: var(--line); max-width: 46rem; }
 .footer .logo { display: block; margin-bottom: var(--s16); font-size: 32px; }
+/* QR code to the form: a light card (dark modules on light, so phone cameras read it) */
+.footer .inner.has-qr { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--s32) var(--s48); }
+.foot-text { flex: 1 1 22rem; min-width: 0; }
+.footer a.qr { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: var(--s8); width: 176px; padding: var(--s16); border-radius: var(--r-medium); background: var(--bg-light); color: var(--text); text-decoration: none; }
+.qr-code { display: block; width: 144px; height: 144px; }
+.qr-caption { font-size: 14px; line-height: 1.3; font-weight: 600; text-align: center; }
+.footer a.qr:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 /* The offer: a light card on the main band, so the button sits on a light background */
 .offer { max-width: 46rem; color: var(--text); margin-top: var(--s32); padding: var(--s32); }
 .band-main .offer .lead { color: var(--text); }

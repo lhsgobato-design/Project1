@@ -81,10 +81,21 @@ export function createApp({ db, readDb = null, config, notifier = null }) {
     });
     next();
   });
+  // Full address of the form, for the QR code in the footer. PUBLIC_URL wins, so the QR stays
+  // right behind a proxy or after moving to a custom domain; otherwise use this request's address.
+  const joinUrlFor = (req) => {
+    const base = /^https?:\/\//.test(config.publicUrl) ? config.publicUrl : `${req.protocol}://${req.get('host')}`;
+    try {
+      return new URL('/#join', base).href;
+    } catch {
+      return '';
+    }
+  };
+
   site.use('/assets', express.static(publicDir, { maxAge: '1h' }));
-  site.get('/', (req, res) => res.send(homePage({ contact, legal })));
-  site.get('/thank-you', (req, res) => res.send(thankYouPage({ contact })));
-  site.get('/privacy', (req, res) => res.send(privacyPage({ contact, legal })));
+  site.get('/', (req, res) => res.send(homePage({ contact, legal, joinUrl: joinUrlFor(req) })));
+  site.get('/thank-you', (req, res) => res.send(thankYouPage({ contact, joinUrl: joinUrlFor(req) })));
+  site.get('/privacy', (req, res) => res.send(privacyPage({ contact, legal, joinUrl: joinUrlFor(req) })));
 
   // The form on the Home page. Works without JavaScript: errors show next to the fields
   // and nothing typed is lost; success goes to the Thank you page.
@@ -94,7 +105,7 @@ export function createApp({ db, readDb = null, config, notifier = null }) {
     if (!enquiryLimiter.take(req.ip)) return res.status(429).type('text').send('Too many tries. Please try again later.');
     const { errors, value } = validateEnquiry(req.body);
     if (Object.keys(errors).length) {
-      return res.status(422).send(homePage({ values: { ...value, consent: Boolean(req.body?.consent) }, errors, contact, legal }));
+      return res.status(422).send(homePage({ values: { ...value, consent: Boolean(req.body?.consent) }, errors, contact, legal, joinUrl: joinUrlFor(req) }));
     }
     saveEnquiry(value);
     return res.redirect(303, '/thank-you');
@@ -306,7 +317,7 @@ export function createApp({ db, readDb = null, config, notifier = null }) {
 
   app.use((req, res) => {
     if (req.path.startsWith('/api')) return res.status(404).json({ ok: false, error: 'Not found.' });
-    return res.status(404).send(siteNotFoundPage({ contact }));
+    return res.status(404).send(siteNotFoundPage({ contact, joinUrl: joinUrlFor(req) }));
   });
 
   // eslint-disable-next-line no-unused-vars

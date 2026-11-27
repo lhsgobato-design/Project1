@@ -1,5 +1,6 @@
 import { esc } from './views.js';
 import { logoHtml } from './logo.js';
+import { qrSvg } from './qr.js';
 
 // The text on these pages is the draft in the Copy page in project1 HQ.
 // Each block is marked there as Ready, Draft or Blocked. Change the text there first.
@@ -66,13 +67,25 @@ function topBar({ withButton }) {
 </header>`;
 }
 
-function footer(contact) {
+// A QR code that opens the form on Home (/#join), for sharing the page from a screen or on paper.
+function joinQr(joinUrl) {
+  if (!joinUrl) return '';
+  return `<a class="qr" href="/#join">
+      ${qrSvg(joinUrl, { label: 'QR code: opens the form to join the waiting list' })}
+      <span class="qr-caption">Scan to join the waiting list</span>
+    </a>`;
+}
+
+function footer(contact, joinUrl = '') {
   return `<footer class="footer">
-  <div class="inner">
-    ${logoHtml({ id: 'foot', tone: 'dark', tag: 'p' })}
-    <p>Contact: ${contactLink(contact)}</p>
-    <p class="small on-dark-soft">We use your name, email and answer to contact you about project1. Only the founder reads them, and you can ask us to delete them at any time.</p>
-    <p><a href="/privacy">Privacy</a></p>
+  <div class="inner${joinUrl ? ' has-qr' : ''}">
+    <div class="foot-text">
+      ${logoHtml({ id: 'foot', tone: 'dark', tag: 'p' })}
+      <p>Contact: ${contactLink(contact)}</p>
+      <p class="small on-dark-soft">We use your name, email and answer to contact you about project1. Only the founder reads them, and you can ask us to delete them at any time.</p>
+      <p><a href="/privacy">Privacy</a></p>
+    </div>
+    ${joinQr(joinUrl)}
   </div>
 </footer>`;
 }
@@ -115,7 +128,7 @@ function joinForm({ values, errors, contact, legal }) {
   </form>`;
 }
 
-export function homePage({ values = {}, errors = {}, contact = '', legal = {} } = {}) {
+export function homePage({ values = {}, errors = {}, contact = '', legal = {}, joinUrl = '' } = {}) {
   const hasErrors = Object.keys(errors).length > 0;
   return layout({
     title: 'project1: join the waiting list',
@@ -209,11 +222,11 @@ export function homePage({ values = {}, errors = {}, contact = '', legal = {} } 
   ${joinForm({ values, errors, contact, legal })}
 </section>
 </main>
-${footer(contact)}`,
+${footer(contact, joinUrl)}`,
   });
 }
 
-export function thankYouPage({ contact = '' } = {}) {
+export function thankYouPage({ contact = '', joinUrl = '' } = {}) {
   return layout({
     title: "You're on the list · project1",
     noindex: true,
@@ -223,11 +236,11 @@ export function thankYouPage({ contact = '' } = {}) {
   <p class="lead">We got your answer. We will read it and may write to you.</p>
   <a class="btn" href="/">Back to home</a>
 </main>
-${footer(contact)}`,
+${footer(contact, joinUrl)}`,
   });
 }
 
-export function privacyPage({ contact = '', legal = {} } = {}) {
+export function privacyPage({ contact = '', legal = {}, joinUrl = '' } = {}) {
   return layout({
     title: 'Privacy · project1',
     body: `${topBar({ withButton: false })}
@@ -272,11 +285,11 @@ export function privacyPage({ contact = '', legal = {} } = {}) {
 
   <p><a class="btn btn-second" href="/">Back to home</a></p>
 </main>
-${footer(contact)}`,
+${footer(contact, joinUrl)}`,
   });
 }
 
-export function siteNotFoundPage({ contact = '' } = {}) {
+export function siteNotFoundPage({ contact = '', joinUrl = '' } = {}) {
   return layout({
     title: 'Page not found · project1',
     noindex: true,
@@ -286,6 +299,6 @@ export function siteNotFoundPage({ contact = '' } = {}) {
   <p class="lead">The link may be old or mistyped.</p>
   <a class="btn" href="/">Back to home</a>
 </main>
-${footer(contact)}`,
+${footer(contact, joinUrl)}`,
   });
 }

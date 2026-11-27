@@ -3,6 +3,7 @@ import { after, before, describe, it } from 'node:test';
 import { createApp } from '../src/app.js';
 import { loadConfig } from '../src/config.js';
 import { openDb } from '../src/db.js';
+import { qrSvg } from '../src/qr.js';
 
 let server;
 let base;
@@ -92,6 +93,46 @@ describe('public pages', () => {
     assert.equal(tokens.status, 200);
     assert.match(await tokens.text(), /--main: #4B3FD6/);
     assert.equal((await get('/assets/site.css')).status, 200);
+  });
+});
+
+describe('QR code to the form', () => {
+  const label = 'QR code: opens the form to join the waiting list';
+
+  it('sits in the footer of every page, links to the form and says what it does', async () => {
+    for (const path of ['/', '/thank-you', '/privacy', '/no-such-page']) {
+      const html = await (await get(path)).text();
+      const foot = html.slice(html.indexOf('<footer'));
+      assert.match(foot, /<a class="qr" href="\/#join">/, path);
+      assert.match(foot, /<svg class="qr-code"[^>]*role="img"/, path);
+      assert.ok(foot.includes(`aria-label="${label}"`), path);
+      assert.match(foot, /Scan to join the waiting list/, path);
+    }
+  });
+
+  it('encodes the full address of the form on this site', async () => {
+    const html = await (await get('/')).text();
+    assert.ok(html.includes(qrSvg(`${base}/#join`, { label })), 'QR for the request address');
+    assert.ok(html.includes('id="join"'), 'the form has the #join anchor');
+  });
+
+  it('uses PUBLIC_URL when it is set', async () => {
+    const config = { ...loadConfig({}), publicUrl: 'https://project1.example' };
+    const db2 = openDb(':memory:');
+    const s2 = createApp({ db: db2, config }).listen(0);
+    await new Promise((resolve) => s2.once('listening', resolve));
+    const html = await (await fetch(`http://127.0.0.1:${s2.address().port}/`)).text();
+    s2.close();
+    db2.close();
+    assert.ok(html.includes(qrSvg('https://project1.example/#join', { label })));
+  });
+
+  it('draws a valid SVG with a light background and a quiet zone', () => {
+    const svg = qrSvg('https://project1.example/#join');
+    const [, size] = /viewBox="0 0 (\d+) \1"/.exec(svg);
+    assert.ok(Number(size) >= 21 + 8, 'at least version 1 plus a 4-module quiet zone on each side');
+    assert.match(svg, /<rect width="\d+" height="\d+" fill="#FBF8F2"\/>/);
+    assert.match(svg, /<path fill="currentColor" d="M\d/);
   });
 });
 
